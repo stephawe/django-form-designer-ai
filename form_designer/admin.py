@@ -1,17 +1,17 @@
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _, ugettext
-try:
-    from django.conf.urls.defaults import patterns, url
-except ImportError:
-    from django.conf.urls import patterns, url
 from django.contrib.admin.views.main import ChangeList
 from django.http import Http404
+from django.utils.translation import ugettext_lazy as _, ugettext
 
 from form_designer.forms import FormDefinitionForm, FormDefinitionFieldInlineForm
 from form_designer.models import FormDefinition, FormDefinitionField, FormLog, FormValue
 from form_designer import settings
 from form_designer.utils import get_class
 
+try:
+    from django.conf.urls import patterns, url
+except ImportError:  # for Django < 1.4
+    from django.conf.urls.defaults import patterns, url  # NOQA
 
 class FormDefinitionFieldInline(admin.StackedInline):
     form = FormDefinitionFieldInlineForm
