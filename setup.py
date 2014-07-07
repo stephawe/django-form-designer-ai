@@ -31,4 +31,5 @@ setup(
     install_requires=[
         'django-picklefield>=0.3.2,<0.4',
     ],
+    zip_safe=False,
 )
