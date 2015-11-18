@@ -137,7 +137,7 @@ class FormDefinition(models.Model):
         except TemplateSyntaxError:
             return text
 
-    def send_mail(self, form, files=[]):
+    def send_mail(self, form, files=[], html_content=False):
         # TODO: refactor, move to utils
         form_data = self.get_form_data(form)
         message = self.compile_message(form_data)
@@ -158,6 +158,8 @@ class FormDefinition(models.Model):
 
         from django.core.mail import EmailMessage
         message = EmailMessage(mail_subject, message, mail_from or None, mail_to)
+        if html_content:
+            message.content_subtype = "html"
 
         if self.mail_uploaded_files:
             for file_path in files:
