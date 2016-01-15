@@ -7,18 +7,15 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.forms import widgets
 from django.core.mail import send_mail
 from django.conf import settings as django_settings
+from django.contrib.auth.models import User
 from django.utils.datastructures import SortedDict
-from django.core.exceptions import ImproperlyConfigured
 
 from form_designer.fields import TemplateTextField, TemplateCharField, ModelNameField, RegexpExpressionField
 from form_designer.utils import get_class
 from form_designer import settings
 
 if settings.VALUE_PICKLEFIELD:
-    try:
-        from picklefield.fields import PickledObjectField
-    except ImportError:
-        raise ImproperlyConfigured('FORM_DESIGNER_VALUE_PICKLEFIELD is True, but django-picklefield is not installed.')
+    from picklefield.fields import PickledObjectField
 
 
 class FormValueDict(dict):
@@ -27,7 +24,7 @@ class FormValueDict(dict):
         self['value'] = value
         self['label'] = label
         super(FormValueDict, self).__init__()
-
+        
 
 class FormDefinition(models.Model):
     name = models.SlugField(_('name'), max_length=255, unique=True)
@@ -177,7 +174,7 @@ class FormDefinition(models.Model):
 class FormDefinitionField(models.Model):
 
     form_definition = models.ForeignKey(FormDefinition)
-    field_class = models.CharField(_('field class'), choices=settings.FIELD_CLASSES, max_length=100)
+    field_class = models.CharField(_('field class'), choices=settings.FIELD_CLASSES, max_length=32)
     position = models.IntegerField(_('position'), blank=True, null=True)
 
     name = models.SlugField(_('name'), max_length=255)
@@ -246,8 +243,8 @@ class FormDefinitionField(models.Model):
 
         if self.field_class == 'django.forms.DecimalField':
             args.update({
-                'max_value': Decimal(str(self.max_value)) if self.max_value != None else None,
-                'min_value': Decimal(str(self.min_value)) if self.max_value != None else None,
+                'max_value': Decimal(str(self.max_value)),
+                'min_value': Decimal(str(self.min_value)),
                 'max_digits': self.max_digits,
                 'decimal_places': self.decimal_places,
             })
@@ -298,7 +295,7 @@ class FormDefinitionField(models.Model):
 class FormLog(models.Model):
     form_definition = models.ForeignKey(FormDefinition, related_name='logs')
     created = models.DateTimeField(_('Created'), auto_now=True)
-    created_by = models.ForeignKey(getattr(django_settings, "AUTH_USER_MODEL", "auth.User"), null=True, blank=True)
+    created_by = models.ForeignKey(User, null=True, blank=True)
     _data = None
 
     def __unicode__(self):

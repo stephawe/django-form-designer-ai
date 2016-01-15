@@ -440,18 +440,16 @@ msgstr "implémentation personnalisée"
 
 #: uploads.py:20
 msgid "This field is required."
-msgstr "Ce champs est obligatoire."
+msgstr "Cette classe de champ nécessite un modèle."
 
 #: uploads.py:25
 msgid "This file type is not allowed."
-msgstr "Ce type de fichier n'est pas autorisé."
+msgstr ""
 
 #: uploads.py:27
 #, python-format
 msgid "Please keep file size under %(max_size)s. Current size is %(size)s."
 msgstr ""
-"Veuillez garder une taille de ficher inférieure à %(max_size)s. "
-"La taille actuelle est de %(size)s."
 
 #: views.py:21
 msgid "Thank you, the data was submitted successfully."

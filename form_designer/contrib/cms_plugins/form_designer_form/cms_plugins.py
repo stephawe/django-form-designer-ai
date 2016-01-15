@@ -13,8 +13,6 @@ class FormDesignerPlugin(CMSPluginBase):
     module = _('Form Designer')
     name = _('Form')
     admin_preview = False
-    render_template = False
-    cache = False  # New in version 3.0. see http://django-cms.readthedocs.org/en/latest/advanced/caching.html
 
     def render(self, context, instance, placeholder):
         if instance.form_definition.form_template_name:
@@ -23,7 +21,7 @@ class FormDesignerPlugin(CMSPluginBase):
             self.render_template = settings.DEFAULT_FORM_TEMPLATE
 
         # Redirection does not work with CMS plugin, hence disable:
-        return process_form(context['request'], instance.form_definition, context, disable_redirection=True, push_messages=False)
+        return process_form(context['request'], instance.form_definition, context, disable_redirection=True)
 
 
 plugin_pool.register_plugin(FormDesignerPlugin)

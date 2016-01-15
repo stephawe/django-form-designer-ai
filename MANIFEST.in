@@ -1,5 +1,5 @@
 include AUTHORS
-include README.rst
+include README.md
 include LICENSE
 recursive-include form_designer/templates *.html *.txt
 recursive-include form_designer/static *.js

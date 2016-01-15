@@ -1,44 +1,61 @@
 # encoding: utf-8
-from form_designer.settings import VALUE_PICKLEFIELD
-DATA_FIELD_TYPE = 'picklefield.fields.PickledObjectField' if VALUE_PICKLEFIELD else 'django.db.models.fields.TextField'
-
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-try:
-    from django.contrib.auth import get_user_model
-except ImportError: # django < 1.5
-    from django.contrib.auth.models import User
-else:
-    User = get_user_model()
-
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        db.rename_column('form_designer_formlog', 'data', 'tmp_data')
-        # Adding field 'FormLog.created_by'
-        db.add_column('form_designer_formlog', 'created_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm["%s.%s" % (User._meta.app_label, User._meta.object_name)], null=True, blank=True), keep_default=False)
-
+        
         # Adding model 'FormValue'
         db.create_table('form_designer_formvalue', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('form_log', self.gf('django.db.models.fields.related.ForeignKey')(related_name='values', to=orm['form_designer.FormLog'])),
             ('field_name', self.gf('django.db.models.fields.SlugField')(max_length=255, db_index=True)),
-            ('value', self.gf('django.db.models.fields.TextField')(null=True)),
+            ('value', self.gf('picklefield.fields.PickledObjectField')(null=True, blank=True)),
         ))
         db.send_create_signal('form_designer', ['FormValue'])
 
+        # Adding field 'FormLog.created_by'
+        db.add_column('form_designer_formlog', 'created_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True, blank=True), keep_default=False)
+
+        db.rename_column('form_designer_formlog', 'data', 'tmp_data')
+        from form_designer.models import FormLog
+        from picklefield import PickledObjectField        
+        tmp_data = PickledObjectField(null=True, blank=True)
+        tmp_data.contribute_to_class(FormLog, 'tmp_data')
+
+        for log in FormLog.objects.all():
+            log.set_data(log.tmp_data)
+            log.save()
+
+        # Deleting field 'FormLog.data'
+        db.delete_column('form_designer_formlog', 'data')
+        db.delete_column('form_designer_formlog', 'tmp_data')
+
+
     def backwards(self, orm):
+        
+        # Deleting model 'FormValue'
+        db.delete_table('form_designer_formvalue')
+
         # Adding field 'FormLog.data'
-        db.add_column('form_designer_formlog', 'data', self.gf(DATA_FIELD_TYPE)(null=True, blank=True), keep_default=False)
+        db.add_column('form_designer_formlog', 'data', self.gf('picklefield.fields.PickledObjectField')(null=True, blank=True), keep_default=False)
+
+        from form_designer.models import FormLog
+        from picklefield import PickledObjectField  
+        tmp_data = PickledObjectField(null=True, blank=True)
+        tmp_data.contribute_to_class(FormLog, 'data')
+
+        for log in FormLog.objects.all():
+            log.data = log.get_data()
+            raise Exception(log.data)
+            log.save()
 
         # Deleting field 'FormLog.created_by'
         db.delete_column('form_designer_formlog', 'created_by_id')
 
-        # Deleting model 'FormValue'
-        db.delete_table('form_designer_formvalue')
 
     models = {
         'auth.group': {
@@ -54,8 +71,21 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
-         "%s.%s" % (User._meta.app_label, User._meta.module_name): {
-            'Meta': {'object_name': User.__name__},
+        'auth.user': {
+            'Meta': {'object_name': 'User'},
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
+            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
+            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
+            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
+            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
         },
         'contenttypes.contenttype': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
@@ -119,7 +149,7 @@ class Migration(SchemaMigration):
         'form_designer.formlog': {
             'Meta': {'object_name': 'FormLog'},
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "User", 'null': 'True', 'blank': 'True'}),
+            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
             'form_definition': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'logs'", 'to': "orm['form_designer.FormDefinition']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
@@ -128,7 +158,7 @@ class Migration(SchemaMigration):
             'field_name': ('django.db.models.fields.SlugField', [], {'max_length': '255', 'db_index': 'True'}),
             'form_log': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'values'", 'to': "orm['form_designer.FormLog']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'value': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
+            'value': ('picklefield.fields.PickledObjectField', [], {'null': 'True', 'blank': 'True'})
         }
     }
 

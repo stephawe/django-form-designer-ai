@@ -5,11 +5,11 @@ from distutils.core import setup
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-README = read('README.rst')
+README = read('README.md')
 
 setup(
     name = "django-form-designer",
-    version = "0.8.0.3",
+    version = "0.7.0",
     url = 'http://github.com/philomat/django-form-designer',
     license = 'BSD',
     description = "Design contact forms, search forms etc from the Django admin, without writing any code. Integrates with Django CMS.",
@@ -21,10 +21,6 @@ setup(
         'form_designer',
         'form_designer.migrations',
         'form_designer.templatetags',
-        'form_designer.contrib',
-        'form_designer.contrib.exporters',
-        'form_designer.contrib.cms_plugins',
-        'form_designer.contrib.cms_plugins.form_designer_form',
     ],
     package_data = {
         'form_designer': [
@@ -45,5 +41,8 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP',
-    ]
+    ],
+    install_requires = [
+        'django-picklefield',
+    ],
 )
