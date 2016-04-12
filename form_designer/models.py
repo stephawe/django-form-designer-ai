@@ -126,7 +126,9 @@ class FormDefinition(models.Model):
         created_by = None
         if user and user.is_authenticated():
             created_by = user
-        FormLog(form_definition=self, data=form_data, created_by=created_by).save()
+        flog = FormLog(form_definition=self, data=form_data, created_by=created_by)
+        flog.save()
+        return flog
 
     def string_template_replace(self, text, context_dict):
         # TODO: refactor, move to utils
