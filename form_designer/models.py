@@ -370,8 +370,3 @@ class FormValue(models.Model):
 
     def __unicode__(self):
         return u'%s = %s' % (self.field_name, self.value)
-
-
-if 'south' in django_settings.INSTALLED_APPS:
-    from south.modelsinspector import add_introspection_rules
-    add_introspection_rules([], ["^form_designer\.fields\..*"])
