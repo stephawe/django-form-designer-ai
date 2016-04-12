@@ -98,7 +98,11 @@ class FormLogAdmin(admin.ModelAdmin):
             self.search_fields, self.list_select_related,
             self.list_per_page, self.list_max_show_all, self.list_editable,
             self)
-        return cl.get_query_set(request)
+
+        if hasattr(cl, "get_query_set"):  # Old Django versions
+            return cl.get_query_set(request)
+        return cl.get_queryset(request)
+
 
     def export_view(self, request, format):
         queryset = self.get_change_list_query_set(request)
