@@ -15,7 +15,7 @@ class CsvExporter(FormLogExporterBase):
         self.writer = csv.writer(self.response, delimiter=settings.CSV_EXPORT_DELIMITER)
 
     def init_response(self):
-        self.response = HttpResponse(mimetype='text/csv')
+        self.response = HttpResponse(content_type='text/csv')
         self.response['Content-Disposition'] = 'attachment; filename=%s.csv' %  \
             unicode(self.model._meta.verbose_name_plural)
 
