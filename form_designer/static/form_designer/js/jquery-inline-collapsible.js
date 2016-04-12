@@ -3,6 +3,7 @@ Makes all inline forms collapsible.
 */
 
 jQuery(function($) {
+    var gettext = window.gettext || function(s) { return s };
     $.makeCollapsible = function(target, item, collapsible, triggerTarget, setInitStatus, setFirstStatus)
     {
         var triggerExpand = gettext('Show');

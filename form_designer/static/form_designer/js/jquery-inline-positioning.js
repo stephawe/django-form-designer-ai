@@ -61,7 +61,7 @@ jQuery(function($) {
         } else {
             unordered[unordered.length] = this;
         }
-        this.parentElement.removeChild(this);
+        if(this.parentElement) this.parentElement.removeChild(this);
     });
     for (var i = 0; i < ordered.length; i++) {
         var el = ordered[i];
