@@ -24,13 +24,14 @@ class XlsExporter(FormLogExporterBase):
 
     def init_writer(self):
         self.wb = xlwt.Workbook()
-        self.ws = self.wb.add_sheet(unicode(self.model._meta.verbose_name_plural))
+        self.ws = self.wb.add_sheet(smart_text(self.model._meta.verbose_name_plural))
         self.rownum = 0
 
     def init_response(self):
         self.response = HttpResponse(content_type='application/ms-excel')
-        self.response['Content-Disposition'] = 'attachment; filename=%s.xls' %  \
-            unicode(self.model._meta.verbose_name_plural)
+        self.response['Content-Disposition'] = 'attachment; filename=%s.xls' % (
+            self.model._meta.verbose_name_plural
+        )
 
     def writerow(self, row):
         for i, f in enumerate(row):

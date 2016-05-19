@@ -1,11 +1,12 @@
-import hashlib
+from __future__ import unicode_literals
+
 import re
-import uuid
 from decimal import Decimal
 
 from django.conf import settings as django_settings
 from django.db import models
 from django.utils.module_loading import import_string
+from django.utils.six import python_2_unicode_compatible
 
 try:
     from collections import OrderedDict
@@ -18,6 +19,7 @@ from picklefield.fields import PickledObjectField
 
 from form_designer import settings
 from form_designer.fields import ModelNameField, RegexpExpressionField, TemplateCharField, TemplateTextField
+from form_designer.utils import get_random_hash
 
 
 class FormValueDict(dict):
@@ -28,6 +30,7 @@ class FormValueDict(dict):
         super(FormValueDict, self).__init__()
 
 
+@python_2_unicode_compatible
 class FormDefinition(models.Model):
     name = models.SlugField(_('name'), max_length=255, unique=True)
     require_hash = models.BooleanField(_('obfuscate URL to this form'), default=False, help_text=_('If enabled, the form can only be reached via a secret URL.'))
@@ -59,9 +62,9 @@ class FormDefinition(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.private_hash:
-            self.private_hash = hashlib.sha1(str(uuid.uuid4())).hexdigest()
+            self.private_hash = get_random_hash()
         if not self.public_hash:
-            self.public_hash = hashlib.sha1(str(uuid.uuid4())).hexdigest()
+            self.public_hash = get_random_hash()
         super(FormDefinition, self).save()
 
     def get_field_dict(self):
@@ -116,7 +119,7 @@ class FormDefinition(models.Model):
         return self.formdefinitionfield_set.count()
     count_fields.short_description = _('Fields')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title or self.name
 
     def log(self, form, user=None):
@@ -182,6 +185,7 @@ class FormDefinition(models.Model):
         return name
 
 
+@python_2_unicode_compatible
 class FormDefinitionField(models.Model):
 
     form_definition = models.ForeignKey(FormDefinition)
@@ -298,19 +302,22 @@ class FormDefinitionField(models.Model):
 
         return args
 
-    def __unicode__(self):
-        return self.label if self.label else self.name
+    def __str__(self):
+        return (self.label or self.name)
 
 
+@python_2_unicode_compatible
 class FormLog(models.Model):
     form_definition = models.ForeignKey(FormDefinition, related_name='logs')
     created = models.DateTimeField(_('Created'), auto_now=True)
     created_by = models.ForeignKey(getattr(django_settings, "AUTH_USER_MODEL", "auth.User"), null=True, blank=True)
     _data = None
 
-    def __unicode__(self):
-        return "%s (%s)" % (self.form_definition.title or
-                            self.form_definition.name, self.created)
+    def __str__(self):
+        return "%s (%s)" % (
+            self.form_definition.title or self.form_definition.name,
+            self.created
+        )
 
     def get_data(self):
         if self._data:
@@ -369,10 +376,11 @@ class FormLog(models.Model):
             self._data = None
 
 
+@python_2_unicode_compatible
 class FormValue(models.Model):
     form_log = models.ForeignKey(FormLog, related_name='values')
     field_name = models.SlugField(_('field name'), max_length=255)
     value = PickledObjectField(_('value'), null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s = %s' % (self.field_name, self.value)

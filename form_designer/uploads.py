@@ -6,9 +6,11 @@ from django.core.files.base import File
 from django.db.models.fields.files import FieldFile
 from django.forms.forms import NON_FIELD_ERRORS
 from django.template.defaultfilters import filesizeformat
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 from form_designer import settings as app_settings
+from form_designer.utils import get_random_hash
 
 
 def get_storage():
@@ -53,7 +55,7 @@ def handle_uploaded_files(form_definition, form):
     files = []
     if form_definition.save_uploaded_files and len(form.file_fields):
         storage = get_storage()
-        secret_hash = hashlib.sha1(str(uuid.uuid4())).hexdigest()[:10]
+        secret_hash = get_random_hash(10)
         for field in form.file_fields:
             uploaded_file = form.cleaned_data.get(field.name, None)
             if uploaded_file is None:
@@ -70,6 +72,7 @@ def handle_uploaded_files(form_definition, form):
     return files
 
 
+@python_2_unicode_compatible
 class StoredUploadedFile(FieldFile):
     """
     A wrapper for uploaded files that is compatible to the FieldFile class, i.e.
@@ -91,5 +94,5 @@ class StoredUploadedFile(FieldFile):
     def delete(self, *args, **kwargs):
         raise NotImplementedError('Static files are read-only')  # pragma: no cover
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

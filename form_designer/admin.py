@@ -69,7 +69,7 @@ class FormLogAdmin(admin.ModelAdmin):
 
     # Disabling all edit links: Hack as found at http://stackoverflow.com/questions/1618728/disable-link-to-edit-object-in-djangos-admin-display-list-only
     def form_no_link(self, obj):
-        return '<a>' + obj.form_definition.__unicode__() + '</a>'
+        return '<a>%s</a>' % obj.form_definition
     form_no_link.admin_order_field = 'form_definition'
     form_no_link.allow_tags = True
     form_no_link.short_description = _('Form')

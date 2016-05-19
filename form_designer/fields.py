@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -17,7 +18,7 @@ class ModelNameFormField(forms.CharField):
     def clean(self, value):
         """
         Validates that the input matches the regular expression. Returns a
-        Unicode object.
+        string object.
         """
         value = super(ModelNameFormField, self).clean(value)
         if value == u'':
