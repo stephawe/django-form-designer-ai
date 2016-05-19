@@ -53,6 +53,7 @@ class FormLogExporterBase(ExporterBase):
 
         if queryset.count():
             fields = queryset[0].form_definition.get_field_dict()
+            field_order = list(fields.keys())
             if include_header:
                 header = []
                 if include_form:
@@ -67,7 +68,7 @@ class FormLogExporterBase(ExporterBase):
                 # for field in queryset[0].data:
                 #    header.append(field['label'] if field['label'] else field['key'])
                 for field_name, field in fields.items():
-                    header.append(field.label if field.label else field.key)
+                    header.append(field.label or field.name)
 
                 self.writerow([smart_str(cell, encoding=settings.CSV_EXPORT_ENCODING) for cell in header])
 
@@ -79,11 +80,10 @@ class FormLogExporterBase(ExporterBase):
                     row.append(entry.created)
                 if include_pk:
                     row.append(entry.pk)
-
-                for item in entry.data:
-                    value = friendly(item['value'], null_value=settings.CSV_EXPORT_NULL_VALUE)
-                    value = smart_str(
-                        value, encoding=settings.CSV_EXPORT_ENCODING)
+                name_to_value = {d['name']: d['value'] for d in entry.data}
+                for field in field_order:
+                    value = friendly(name_to_value.get(field), null_value=settings.CSV_EXPORT_NULL_VALUE)
+                    value = smart_str(value, encoding=settings.CSV_EXPORT_ENCODING)
                     row.append(value)
 
                 self.writerow(row)
