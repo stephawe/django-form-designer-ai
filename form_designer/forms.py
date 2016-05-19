@@ -22,7 +22,7 @@ class DesignedForm(forms.Form):
         self.fields[form_definition.submit_flag_name] = forms.BooleanField(required=False, initial=1, widget=widgets.HiddenInput)
 
     def add_defined_field(self, def_field, initial_data=None):
-        if initial_data and initial_data.has_key(def_field.name):
+        if initial_data and def_field.name in initial_data:
             if not def_field.field_class in ('django.forms.MultipleChoiceField', 'django.forms.ModelMultipleChoiceField'):
                 def_field.initial = initial_data.get(def_field.name)
             else:
@@ -34,7 +34,7 @@ class DesignedForm(forms.Form):
 
     def clean(self):
         return clean_files(self)
-        
+
 
 class FormDefinitionFieldInlineForm(forms.ModelForm):
     class Meta:
@@ -42,12 +42,12 @@ class FormDefinitionFieldInlineForm(forms.ModelForm):
         exclude = ()
 
     def clean_regex(self):
-        if not self.cleaned_data['regex'] and self.cleaned_data.has_key('field_class') and self.cleaned_data['field_class'] in ('django.forms.RegexField',):
+        if not self.cleaned_data['regex'] and 'field_class' in self.cleaned_data and self.cleaned_data['field_class'] in ('django.forms.RegexField',):
             raise forms.ValidationError(_('This field class requires a regular expression.'))
         return self.cleaned_data['regex']
 
     def clean_choice_model(self):
-        if not self.cleaned_data['choice_model'] and self.cleaned_data.has_key('field_class') and self.cleaned_data['field_class'] in ('django.forms.ModelChoiceField', 'django.forms.ModelMultipleChoiceField'):
+        if not self.cleaned_data['choice_model'] and 'field_class' in self.cleaned_data and self.cleaned_data['field_class'] in ('django.forms.ModelChoiceField', 'django.forms.ModelMultipleChoiceField'):
             raise forms.ValidationError(_('This field class requires a model.'))
         return self.cleaned_data['choice_model']
 

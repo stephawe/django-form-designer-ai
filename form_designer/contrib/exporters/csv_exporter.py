@@ -5,6 +5,7 @@ from django.http import HttpResponse
 
 import csv
 
+
 class CsvExporter(FormLogExporterBase):
 
     @staticmethod

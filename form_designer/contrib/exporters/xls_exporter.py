@@ -20,7 +20,7 @@ class XlsExporter(FormLogExporterBase):
 
     @staticmethod
     def is_enabled():
-        return XLWT_INSTALLED 
+        return XLWT_INSTALLED
 
     def init_writer(self):
         self.wb = xlwt.Workbook()

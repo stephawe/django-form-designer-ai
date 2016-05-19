@@ -1,5 +1,6 @@
 import re
-import hashlib, uuid
+import hashlib
+import uuid
 from decimal import Decimal
 
 from django.db import models
@@ -36,13 +37,13 @@ class FormDefinition(models.Model):
     mail_to = TemplateCharField(_('send form data to e-mail address'), help_text=('Separate several addresses with a comma. Your form fields are available as template context. Example: "admin@domain.com, {{ from_email }}" if you have a field named `from_email`.'), max_length=255, blank=True, null=True)
     mail_from = TemplateCharField(_('sender address'), max_length=255, help_text=('Your form fields are available as template context. Example: "{{ first_name }} {{ last_name }} <{{ from_email }}>" if you have fields named `first_name`, `last_name`, `from_email`.'), blank=True, null=True)
     mail_subject = TemplateCharField(_('email subject'), max_length=255, help_text=('Your form fields are available as template context. Example: "Contact form {{ subject }}" if you have a field named `subject`.'), blank=True, null=True)
-    mail_uploaded_files  = models.BooleanField(_('Send uploaded files as email attachments'), default=True)
-    method = models.CharField(_('method'), max_length=10, default="POST", choices = (('POST', 'POST'), ('GET', 'GET')))
+    mail_uploaded_files = models.BooleanField(_('Send uploaded files as email attachments'), default=True)
+    method = models.CharField(_('method'), max_length=10, default="POST", choices=(('POST', 'POST'), ('GET', 'GET')))
     success_message = models.CharField(_('success message'), max_length=255, blank=True, null=True)
     error_message = models.CharField(_('error message'), max_length=255, blank=True, null=True)
     submit_label = models.CharField(_('submit button label'), max_length=255, blank=True, null=True)
     log_data = models.BooleanField(_('log form data'), help_text=_('Logs all form submissions to the database.'), default=True)
-    save_uploaded_files  = models.BooleanField(_('save uploaded files'), help_text=_('Saves all uploaded files using server storage.'), default=True)
+    save_uploaded_files = models.BooleanField(_('save uploaded files'), help_text=_('Saves all uploaded files using server storage.'), default=True)
     success_redirect = models.BooleanField(_('HTTP redirect after successful submission'), default=True)
     success_clear = models.BooleanField(_('clear form after successful submission'), default=True)
     allow_get_initial = models.BooleanField(_('allow initial values via URL'), help_text=_('If enabled, you can fill in form fields by adding them to the query string.'), default=True)
@@ -174,7 +175,7 @@ class FormDefinition(models.Model):
     @property
     def submit_flag_name(self):
         name = settings.SUBMIT_FLAG_NAME % self.name
-        # make sure we are not overriding one of the actual form fields 
+        # make sure we are not overriding one of the actual form fields
         while self.formdefinitionfield_set.filter(name__exact=name).count() > 0:
             name += '_'
         return name
@@ -215,14 +216,14 @@ class FormDefinitionField(models.Model):
         ordering = ['position']
 
     def save(self, *args, **kwargs):
-        if self.position == None:
+        if self.position is None:
             self.position = 0
         super(FormDefinitionField, self).save(*args, **kwargs)
 
     def ____init__(self, field_class=None, name=None, required=None, widget=None, label=None, initial=None, help_text=None, *args, **kwargs):
         super(FormDefinitionField, self).__init__(*args, **kwargs)
         self.name = name
-        self.field_class = field_class  
+        self.field_class = field_class
         self.required = required
         self.widget = widget
         self.label = label
@@ -245,14 +246,14 @@ class FormDefinitionField(models.Model):
 
         if self.field_class in ('django.forms.IntegerField', 'django.forms.DecimalField'):
             args.update({
-                'max_value': int(self.max_value) if self.max_value != None else None,
-                'min_value': int(self.min_value) if self.min_value != None else None,
+                'max_value': int(self.max_value) if self.max_value is not None else None,
+                'min_value': int(self.min_value) if self.min_value is not None else None,
             })
 
         if self.field_class == 'django.forms.DecimalField':
             args.update({
-                'max_value': Decimal(str(self.max_value)) if self.max_value != None else None,
-                'min_value': Decimal(str(self.min_value)) if self.max_value != None else None,
+                'max_value': Decimal(str(self.max_value)) if self.max_value is not None else None,
+                'min_value': Decimal(str(self.min_value)) if self.max_value is not None else None,
                 'max_digits': self.max_digits,
                 'decimal_places': self.decimal_places,
             })
@@ -307,8 +308,8 @@ class FormLog(models.Model):
     _data = None
 
     def __unicode__(self):
-        return "%s (%s)" % (self.form_definition.title or  \
-            self.form_definition.name, self.created) 
+        return "%s (%s)" % (self.form_definition.title or
+                            self.form_definition.name, self.created)
 
     def get_data(self):
         if self._data:
@@ -328,7 +329,7 @@ class FormLog(models.Model):
                 label = None
 
             value_dict = FormValueDict(item.field_name, item.value,
-                label)
+                                       label)
 
             if item.field_name in fields:
                 values_with_header[item.field_name] = value_dict
@@ -354,7 +355,7 @@ class FormLog(models.Model):
 
     def save(self, *args, **kwargs):
         super(FormLog, self).save(*args, **kwargs)
-        if self._data: 
+        if self._data:
             # safe form data and then clear temporary variable
             for value in self.values.all():
                 value.delete()
@@ -370,6 +371,7 @@ class FormValue(models.Model):
     form_log = models.ForeignKey(FormLog, related_name='values')
     field_name = models.SlugField(_('field name'), max_length=255)
     value = PickledObjectField(_('value'), null=True, blank=True)
+
     def __unicode__(self):
         return u'%s = %s' % (self.field_name, self.value)
 
@@ -377,5 +379,3 @@ class FormValue(models.Model):
 if 'south' in django_settings.INSTALLED_APPS:
     from south.modelsinspector import add_introspection_rules
     add_introspection_rules([], ["^form_designer\.fields\..*"])
-
-

@@ -6,17 +6,19 @@ from django.template.defaultfilters import yesno
 register = template.Library()
 
 # Returns a more "human-friendly" representation of value than repr()
-def friendly(value, null_value=None): 
+
+
+def friendly(value, null_value=None):
     if value is None and not (null_value is None):
         return null_value
-    if type(value) is QuerySet:
+    if isinstance(value, QuerySet):
         qs = value
-        value = []        
+        value = []
         for object in qs:
             value.append(object.__unicode__())
-    if type(value) is list:
+    if isinstance(value, list):
         value = ", ".join(value)
-    if type(value) is bool:
+    if isinstance(value, bool):
         value = yesno(value, u"%s,%s" % (_('yes'), _('no')),)
     if hasattr(value, 'url'):
         value = value.url

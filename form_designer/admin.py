@@ -51,7 +51,7 @@ class FormLogAdmin(admin.ModelAdmin):
     for class_path in settings.EXPORTER_CLASSES:
         cls = get_class(class_path)
         if cls.is_enabled():
-            exporter_classes[cls.export_format()] = cls 
+            exporter_classes[cls.export_format()] = cls
             exporter_classes_ordered.append(cls)
 
     def get_exporter_classes(self):
@@ -63,20 +63,20 @@ class FormLogAdmin(admin.ModelAdmin):
         for cls in self.get_exporter_classes():
             desc = _("Export selected %%(verbose_name_plural)s as %s") % cls.export_format()
             actions[cls.export_format()] = (cls.export_view, cls.export_format(), desc)
-            
+
         return actions
 
     # Disabling all edit links: Hack as found at http://stackoverflow.com/questions/1618728/disable-link-to-edit-object-in-djangos-admin-display-list-only
     def form_no_link(self, obj):
-        return '<a>'+obj.form_definition.__unicode__()+'</a>'
+        return '<a>' + obj.form_definition.__unicode__() + '</a>'
     form_no_link.admin_order_field = 'form_definition'
     form_no_link.allow_tags = True
     form_no_link.short_description = _('Form')
 
     def get_urls(self):
         urls = patterns('',
-            url(r'^export/(?P<format>[a-zA-Z0-9_-]+)/$', self.admin_site.admin_view(self.export_view), name='form_designer_export'),
-        )
+                        url(r'^export/(?P<format>[a-zA-Z0-9_-]+)/$', self.admin_site.admin_view(self.export_view), name='form_designer_export'),
+                        )
         return urls + super(FormLogAdmin, self).get_urls()
 
     def data_html(self, obj):
@@ -94,19 +94,18 @@ class FormLogAdmin(admin.ModelAdmin):
         ChangeList = self.get_changelist(request)
 
         cl = ChangeList(request, self.model, list_display,
-            list_display_links, list_filter, self.date_hierarchy,
-            self.search_fields, self.list_select_related,
-            self.list_per_page, self.list_max_show_all, self.list_editable,
-            self)
+                        list_display_links, list_filter, self.date_hierarchy,
+                        self.search_fields, self.list_select_related,
+                        self.list_per_page, self.list_max_show_all, self.list_editable,
+                        self)
 
         if hasattr(cl, "get_query_set"):  # Old Django versions
             return cl.get_query_set(request)
         return cl.get_queryset(request)
 
-
     def export_view(self, request, format):
         queryset = self.get_change_list_query_set(request)
-        if not format in self.exporter_classes:
+        if format not in self.exporter_classes:
             raise Http404()
         return self.exporter_classes[format](self.model).export(request, queryset)
 
@@ -114,13 +113,13 @@ class FormLogAdmin(admin.ModelAdmin):
         from django.core.urlresolvers import reverse, NoReverseMatch
         extra_context = extra_context or {}
         try:
-            query_string = '?'+request.META['QUERY_STRING']
+            query_string = '?' + request.META['QUERY_STRING']
         except (TypeError, KeyError):
             query_string = ''
 
-        exporter_links = [] 
+        exporter_links = []
         for cls in self.get_exporter_classes():
-            url = reverse('admin:form_designer_export', args=(cls.export_format(),))+query_string
+            url = reverse('admin:form_designer_export', args=(cls.export_format(),)) + query_string
             exporter_links.append({'url': url, 'label': _('Export view as %s') % cls.export_format()})
 
         extra_context['exporters'] = exporter_links

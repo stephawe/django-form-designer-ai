@@ -9,10 +9,10 @@ class ExporterBase(object):
 
     def __init__(self, model):
         self.model = model
-        
+
     @staticmethod
     def is_enabled():
-        return True 
+        return True
 
     @staticmethod
     def export_format():
@@ -23,7 +23,7 @@ class ExporterBase(object):
 
     def init_response(self):
         raise NotImplemented()
-    
+
     def writerow(self, row):
         raise NotImplemented()
 
@@ -60,7 +60,7 @@ class FormLogExporterBase(ExporterBase):
                     header.append(_('Created'))
                 if include_pk:
                     header.append(_('ID'))
-                # Form fields might have been changed and not match 
+                # Form fields might have been changed and not match
                 # existing form logs anymore.
                 # Hence, use current form definition for header.
                 # for field in queryset[0].data:
