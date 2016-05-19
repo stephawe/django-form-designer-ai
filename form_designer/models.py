@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import re
 from decimal import Decimal
 
+import django
 from django.conf import settings as django_settings
 from django.db import models
 from django.utils.module_loading import import_string
@@ -96,23 +97,25 @@ class FormDefinition(models.Model):
     def get_form_data_context(self, form_data):
         # TODO: refactor, move to utils
         dict = {}
-        if form_data:
-            for field in form_data:
-                dict[field['name']] = field['value']
+        for field in form_data or ():
+            dict[field['name']] = field['value']
         return dict
 
     def compile_message(self, form_data, template=None):
         # TODO: refactor, move to utils
         from django.template.loader import get_template
-        from django.template import Context, Template
+        from django.template import Template
         if template:
             t = get_template(template)
         elif not self.message_template:
             t = get_template('txt/formdefinition/data_message.txt')
         else:
             t = Template(self.message_template)
-        context = Context(self.get_form_data_context(form_data))
+        context = self.get_form_data_context(form_data)
         context['data'] = form_data
+        if django.VERSION[:2] < (1, 8):
+            from django.template import Context
+            context = Context(context)
         return t.render(context)
 
     def count_fields(self):
@@ -172,7 +175,7 @@ class FormDefinition(models.Model):
 
     @property
     def is_template_html(self):
-        if re.search(u"<[^>]+>", self.message_template) and re.search(u"</[^>]+>", self.message_template):
+        if self.message_template and re.search(u"<[^>]+>", self.message_template) and re.search(u"</[^>]+>", self.message_template):
             return True
         return False
 
