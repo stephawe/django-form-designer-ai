@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, url
 from django.contrib import admin
 from django.http import Http404
+from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 
 from form_designer import settings
@@ -8,7 +9,6 @@ from form_designer.forms import FormDefinitionFieldInlineForm, FormDefinitionFor
 from form_designer.models import FormDefinition
 from form_designer.models import FormDefinitionField
 from form_designer.models import FormLog
-from form_designer.utils import get_class
 
 
 class FormDefinitionFieldInline(admin.StackedInline):
@@ -50,7 +50,7 @@ class FormLogAdmin(admin.ModelAdmin):
     exporter_classes = {}
     exporter_classes_ordered = []
     for class_path in settings.EXPORTER_CLASSES:
-        cls = get_class(class_path)
+        cls = import_string(class_path)
         if cls.is_enabled():
             exporter_classes[cls.export_format()] = cls
             exporter_classes_ordered.append(cls)

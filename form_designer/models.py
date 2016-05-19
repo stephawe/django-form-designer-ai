@@ -5,13 +5,19 @@ from decimal import Decimal
 
 from django.conf import settings as django_settings
 from django.db import models
-from django.utils.datastructures import SortedDict
+from django.utils.module_loading import import_string
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    from django.utils.datastructures import SortedDict as OrderedDict
+
+
 from django.utils.translation import ugettext_lazy as _
 from picklefield.fields import PickledObjectField
 
 from form_designer import settings
 from form_designer.fields import ModelNameField, RegexpExpressionField, TemplateCharField, TemplateTextField
-from form_designer.utils import get_class
 
 
 class FormValueDict(dict):
@@ -59,8 +65,7 @@ class FormDefinition(models.Model):
         super(FormDefinition, self).save()
 
     def get_field_dict(self):
-        field_dict = SortedDict()
-        names = []
+        field_dict = OrderedDict()
         for field in self.formdefinitionfield_set.all():
             field_dict[field.name] = field
         return field_dict
@@ -288,7 +293,7 @@ class FormDefinitionField(models.Model):
 
         if self.widget:
             args.update({
-                'widget': get_class(self.widget)()
+                'widget': import_string(self.widget)()
             })
 
         return args
@@ -356,10 +361,11 @@ class FormLog(models.Model):
             for value in self.values.all():
                 value.delete()
             for item in self._data:
-                value = FormValue()
-                value.field_name = item['name']
-                value.value = item['value']
-                self.values.add(value)
+                FormValue.objects.create(
+                    form_log=self,
+                    field_name=item['name'],
+                    value=item['value'],
+                )
             self._data = None
 
 

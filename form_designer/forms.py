@@ -4,12 +4,12 @@ from django import forms
 from django.conf import settings as django_settings
 from django.forms import widgets
 from django.forms.widgets import Select
+from django.utils.module_loading import import_string
 from django.utils.translation import ugettext as _
 
 from form_designer import settings
 from form_designer.models import FormDefinition, FormDefinitionField
 from form_designer.uploads import clean_files
-from form_designer.utils import get_class
 
 
 class DesignedForm(forms.Form):
@@ -27,7 +27,7 @@ class DesignedForm(forms.Form):
                 def_field.initial = initial_data.get(def_field.name)
             else:
                 def_field.initial = initial_data.getlist(def_field.name)
-        field = get_class(def_field.field_class)(**def_field.get_form_field_init_args())
+        field = import_string(def_field.field_class)(**def_field.get_form_field_init_args())
         self.fields[def_field.name] = field
         if isinstance(field, forms.FileField):
             self.file_fields.append(def_field)
