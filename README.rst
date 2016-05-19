@@ -108,3 +108,8 @@ instead because you're already including it anyway, define JQUERY\_JS in your
 settings file. For instance::
 
     JQUERY_JS = 'jquery/jquery-latest.js'
+
+Running tests
+=============
+
+Use `tox`.

@@ -17,16 +17,16 @@ class ExporterBase(object):
 
     @staticmethod
     def export_format():
-        raise NotImplemented()
+        raise NotImplementedError()  # pragma: no cover
 
     def init_writer(self):
-        raise NotImplemented()
+        raise NotImplementedError()  # pragma: no cover
 
     def init_response(self):
-        raise NotImplemented()
+        raise NotImplementedError()  # pragma: no cover
 
     def writerow(self, row):
-        raise NotImplemented()
+        raise NotImplementedError()  # pragma: no cover
 
     def close(self):
         pass
@@ -36,7 +36,7 @@ class ExporterBase(object):
         return cls(modeladmin.model).export(request, queryset)
 
     def export(self, request, queryset=None):
-        raise NotImplemented()
+        raise NotImplementedError()  # pragma: no cover
 
 
 class FormLogExporterBase(ExporterBase):

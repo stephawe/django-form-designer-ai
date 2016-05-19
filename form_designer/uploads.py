@@ -86,10 +86,10 @@ class StoredUploadedFile(FieldFile):
         return get_storage()
 
     def save(self, *args, **kwargs):
-        raise NotImplementedError('Static files are read-only')
+        raise NotImplementedError('Static files are read-only')  # pragma: no cover
 
     def delete(self, *args, **kwargs):
-        raise NotImplementedError('Static files are read-only')
+        raise NotImplementedError('Static files are read-only')  # pragma: no cover
 
     def __unicode__(self):
         return self.name
