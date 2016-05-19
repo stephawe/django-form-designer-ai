@@ -1,8 +1,9 @@
+from django.db.models import Count
+from django.utils.encoding import smart_str
+from django.utils.translation import ugettext as _
+
 from form_designer import settings
 from form_designer.templatetags.friendly import friendly
-from django.db.models import Count
-from django.utils.translation import ugettext as _
-from django.utils.encoding import smart_str
 
 
 class ExporterBase(object):

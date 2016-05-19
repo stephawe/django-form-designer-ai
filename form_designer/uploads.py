@@ -1,12 +1,14 @@
-from form_designer import settings as app_settings
-from django.core.files.base import File
-from django.forms.forms import NON_FIELD_ERRORS
-from django.utils.translation import ugettext_lazy as _
-from django.db.models.fields.files import FieldFile
-from django.template.defaultfilters import filesizeformat
-import os
 import hashlib
+import os
 import uuid
+
+from django.core.files.base import File
+from django.db.models.fields.files import FieldFile
+from django.forms.forms import NON_FIELD_ERRORS
+from django.template.defaultfilters import filesizeformat
+from django.utils.translation import ugettext_lazy as _
+
+from form_designer import settings as app_settings
 
 
 def get_storage():

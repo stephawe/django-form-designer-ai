@@ -1,21 +1,20 @@
-from django.shortcuts import get_object_or_404, render_to_response
-from django.template import RequestContext
-from django.utils.translation import ugettext as _
-from django.http import HttpResponseRedirect
-from django.conf import settings
-from form_designer import settings as app_settings
-from django.contrib import messages
-from django.core.context_processors import csrf
-
 import os
 import random
 from datetime import datetime
 
+from django.conf import settings
+from django.contrib import messages
+from django.core.context_processors import csrf
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render_to_response
+from django.template import RequestContext
+from django.utils.translation import ugettext as _
+
+from form_designer import settings as app_settings
 from form_designer.forms import DesignedForm
 from form_designer.models import FormDefinition, FormLog
+from form_designer.signals import designedform_error, designedform_render, designedform_submit, designedform_success
 from form_designer.uploads import handle_uploaded_files
-from form_designer.signals import (designedform_submit, designedform_success,
-                                   designedform_error, designedform_render)
 
 
 def process_form(request, form_definition, extra_context={}, disable_redirection=False, push_messages=True):

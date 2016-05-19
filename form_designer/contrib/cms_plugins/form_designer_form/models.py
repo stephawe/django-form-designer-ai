@@ -1,7 +1,8 @@
-from form_designer.models import FormDefinition
-from cms.models import CMSPlugin
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+
+from cms.models import CMSPlugin
+from form_designer.models import FormDefinition
 
 
 class CMSFormDefinition(CMSPlugin):

@@ -1,13 +1,13 @@
 import os
 
 from django import forms
-from django.forms import widgets
 from django.conf import settings as django_settings
+from django.forms import widgets
 from django.forms.widgets import Select
 from django.utils.translation import ugettext as _
 
 from form_designer import settings
-from form_designer.models import FormDefinitionField, FormDefinition
+from form_designer.models import FormDefinition, FormDefinitionField
 from form_designer.uploads import clean_files
 from form_designer.utils import get_class
 

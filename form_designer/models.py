@@ -1,21 +1,21 @@
-import re
 import hashlib
+import re
 import uuid
 from decimal import Decimal
 
-from django.db import models
-from django.utils.translation import ugettext, ugettext_lazy as _
-from django.forms import widgets
-from django.core.mail import send_mail
 from django.conf import settings as django_settings
-from django.utils.datastructures import SortedDict
 from django.core.exceptions import ImproperlyConfigured
-
-from form_designer.fields import TemplateTextField, TemplateCharField, ModelNameField, RegexpExpressionField
-from form_designer.utils import get_class
-from form_designer import settings
-
+from django.core.mail import send_mail
+from django.db import models
+from django.forms import widgets
+from django.utils.datastructures import SortedDict
+from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext
 from picklefield.fields import PickledObjectField
+
+from form_designer import settings
+from form_designer.fields import ModelNameField, RegexpExpressionField, TemplateCharField, TemplateTextField
+from form_designer.utils import get_class
 
 
 class FormValueDict(dict):

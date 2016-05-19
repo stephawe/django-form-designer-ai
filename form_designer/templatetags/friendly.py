@@ -1,7 +1,7 @@
 from django import template
 from django.db.models.query import QuerySet
-from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import yesno
+from django.utils.translation import ugettext_lazy as _
 
 register = template.Library()
 
