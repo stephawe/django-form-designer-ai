@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib import admin
 from django.http import Http404
 from django.utils.module_loading import import_string
@@ -75,9 +75,13 @@ class FormLogAdmin(admin.ModelAdmin):
     form_no_link.short_description = _('Form')
 
     def get_urls(self):
-        urls = patterns('',
-                        url(r'^export/(?P<format>[a-zA-Z0-9_-]+)/$', self.admin_site.admin_view(self.export_view), name='form_designer_export'),
-                        )
+        urls = [
+            url(
+                r'^export/(?P<format>[a-zA-Z0-9_-]+)/$',
+                self.admin_site.admin_view(self.export_view),
+                name='form_designer_export'
+            ),
+        ]
         return urls + super(FormLogAdmin, self).get_urls()
 
     def data_html(self, obj):
