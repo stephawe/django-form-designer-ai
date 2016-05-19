@@ -1,8 +1,4 @@
-import os
-import random
-from datetime import datetime
 
-from django.conf import settings
 from django.contrib import messages
 from django.core.context_processors import csrf
 from django.http import HttpResponseRedirect
@@ -12,7 +8,7 @@ from django.utils.translation import ugettext as _
 
 from form_designer import settings as app_settings
 from form_designer.forms import DesignedForm
-from form_designer.models import FormDefinition, FormLog
+from form_designer.models import FormDefinition
 from form_designer.signals import designedform_error, designedform_render, designedform_submit, designedform_success
 from form_designer.uploads import handle_uploaded_files
 

@@ -1,13 +1,13 @@
 from django.conf.urls import patterns, url
 from django.contrib import admin
-from django.contrib.admin.views.main import ChangeList
 from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
 
 from form_designer import settings
 from form_designer.forms import FormDefinitionFieldInlineForm, FormDefinitionForm
-from form_designer.models import FormDefinition, FormDefinitionField, FormLog, FormValue
+from form_designer.models import FormDefinition
+from form_designer.models import FormDefinitionField
+from form_designer.models import FormLog
 from form_designer.utils import get_class
 
 
@@ -111,7 +111,7 @@ class FormLogAdmin(admin.ModelAdmin):
         return self.exporter_classes[format](self.model).export(request, queryset)
 
     def changelist_view(self, request, extra_context=None):
-        from django.core.urlresolvers import reverse, NoReverseMatch
+        from django.core.urlresolvers import reverse
         extra_context = extra_context or {}
         try:
             query_string = '?' + request.META['QUERY_STRING']

@@ -4,13 +4,9 @@ import uuid
 from decimal import Decimal
 
 from django.conf import settings as django_settings
-from django.core.exceptions import ImproperlyConfigured
-from django.core.mail import send_mail
 from django.db import models
-from django.forms import widgets
 from django.utils.datastructures import SortedDict
 from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
 from picklefield.fields import PickledObjectField
 
 from form_designer import settings

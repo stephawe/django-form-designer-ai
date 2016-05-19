@@ -1,7 +1,6 @@
 import csv
 
 from django.http import HttpResponse
-from django.utils.translation import ugettext_lazy as _
 
 from form_designer import settings
 from form_designer.contrib.exporters import FormLogExporterBase
