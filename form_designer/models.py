@@ -14,11 +14,7 @@ from form_designer.fields import TemplateTextField, TemplateCharField, ModelName
 from form_designer.utils import get_class
 from form_designer import settings
 
-if settings.VALUE_PICKLEFIELD:
-    try:
-        from picklefield.fields import PickledObjectField
-    except ImportError:
-        raise ImproperlyConfigured('FORM_DESIGNER_VALUE_PICKLEFIELD is True, but django-picklefield is not installed.')
+from picklefield.fields import PickledObjectField
 
 
 class FormValueDict(dict):
@@ -373,16 +369,7 @@ class FormLog(models.Model):
 class FormValue(models.Model):
     form_log = models.ForeignKey(FormLog, related_name='values')
     field_name = models.SlugField(_('field name'), max_length=255)
-    if settings.VALUE_PICKLEFIELD:
-        # use PickledObjectField if available because it preserves the
-        # original data type
-        value = PickledObjectField(_('value'), null=True, blank=True)
-    else:
-        # otherwise just use a TextField, with the drawback that
-        # all values will just be stored as unicode strings, 
-        # but you can easily query the database for form results.
-        value = models.TextField(_('value'), null=True, blank=True)
-
+    value = PickledObjectField(_('value'), null=True, blank=True)
     def __unicode__(self):
         return u'%s = %s' % (self.field_name, self.value)
 
