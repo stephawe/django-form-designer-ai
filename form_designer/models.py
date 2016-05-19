@@ -51,7 +51,7 @@ class FormDefinition(models.Model):
     success_clear = models.BooleanField(_('clear form after successful submission'), default=True)
     allow_get_initial = models.BooleanField(_('allow initial values via URL'), help_text=_('If enabled, you can fill in form fields by adding them to the query string.'), default=True)
     message_template = TemplateTextField(_('message template'), help_text=_('Your form fields are available as template context. Example: "{{ message }}" if you have a field named `message`. To iterate over all fields, use the variable `data` (a list containing a dictionary for each form field, each containing the elements `name`, `label`, `value`).'), blank=True, null=True)
-    form_template_name = models.CharField(_('form template'), max_length=255, choices=settings.FORM_TEMPLATES, blank=True, null=True)
+    form_template_name = models.CharField(_('form template'), max_length=255, blank=True, null=True)
     display_logged = models.BooleanField(_('display logged submissions with form'), default=False)
 
     class Meta:
@@ -187,14 +187,14 @@ class FormDefinition(models.Model):
 class FormDefinitionField(models.Model):
 
     form_definition = models.ForeignKey(FormDefinition)
-    field_class = models.CharField(_('field class'), choices=settings.FIELD_CLASSES, max_length=100)
+    field_class = models.CharField(_('field class'), max_length=100)
     position = models.IntegerField(_('position'), blank=True, null=True)
 
     name = models.SlugField(_('name'), max_length=255)
     label = models.CharField(_('label'), max_length=255, blank=True, null=True)
     required = models.BooleanField(_('required'), default=True)
     include_result = models.BooleanField(_('include in result'), help_text=('If this is disabled, the field value will not be included in logs and e-mails generated from form data.'), default=True)
-    widget = models.CharField(_('widget'), default='', choices=settings.WIDGET_CLASSES, max_length=255, blank=True, null=True)
+    widget = models.CharField(_('widget'), default='', max_length=255, blank=True, null=True)
     initial = models.TextField(_('initial value'), blank=True, null=True)
     help_text = models.CharField(_('help text'), max_length=255, blank=True, null=True)
 
@@ -210,8 +210,7 @@ class FormDefinitionField(models.Model):
 
     regex = RegexpExpressionField(_('regular Expression'), max_length=255, blank=True, null=True)
 
-    choice_model_choices = settings.CHOICE_MODEL_CHOICES
-    choice_model = ModelNameField(_('data model'), max_length=255, blank=True, null=True, choices=choice_model_choices, help_text=('your_app.models.ModelName' if not choice_model_choices else None))
+    choice_model = ModelNameField(_('data model'), max_length=255, blank=True, null=True)
     choice_model_empty_label = models.CharField(_('empty label'), max_length=255, blank=True, null=True)
 
     class Meta:

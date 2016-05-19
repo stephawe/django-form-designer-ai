@@ -3,6 +3,7 @@ import os
 from django import forms
 from django.forms import widgets
 from django.conf import settings as django_settings
+from django.forms.widgets import Select
 from django.utils.translation import ugettext as _
 
 from form_designer import settings
@@ -50,6 +51,18 @@ class FormDefinitionFieldInlineForm(forms.ModelForm):
             raise forms.ValidationError(_('This field class requires a model.'))
         return self.cleaned_data['choice_model']
 
+    def __init__(self, **kwargs):
+        super(FormDefinitionFieldInlineForm, self).__init__(**kwargs)
+        for field_name, choices in (
+            ('field_class', settings.FIELD_CLASSES),
+            ('widget', settings.WIDGET_CLASSES),
+            ('choice_model', settings.CHOICE_MODEL_CHOICES),
+        ):
+            if choices is None:
+                continue
+            if field_name in self.fields:
+                self.fields[field_name].widget = Select(choices=choices)
+
 
 class FormDefinitionForm(forms.ModelForm):
     class Meta:
@@ -74,3 +87,8 @@ class FormDefinitionForm(forms.ModelForm):
             [os.path.join(settings.STATIC_URL, path) for path in plugins])
         return forms.Media(js=js)
     media = property(_media)
+
+    def __init__(self, **kwargs):
+        super(FormDefinitionForm, self).__init__(**kwargs)
+        if 'form_template_name' in self.fields:
+            self.fields['form_template_name'].widget = Select(choices=settings.FORM_TEMPLATES)
