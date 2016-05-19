@@ -9,11 +9,7 @@ from django.db import models
 from django.utils.module_loading import import_string
 from django.utils.six import python_2_unicode_compatible
 
-try:
-    from collections import OrderedDict
-except ImportError:
-    from django.utils.datastructures import SortedDict as OrderedDict
-
+from collections import OrderedDict
 
 from django.utils.translation import ugettext_lazy as _
 from picklefield.fields import PickledObjectField
