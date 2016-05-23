@@ -40,6 +40,7 @@ class FormDefinitionAdmin(admin.ModelAdmin):
     inlines = [
         FormDefinitionFieldInline,
     ]
+    search_fields = ('name', 'title')
 
 
 class FormLogAdmin(admin.ModelAdmin):
