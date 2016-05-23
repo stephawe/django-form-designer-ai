@@ -5,7 +5,7 @@ from django.conf import settings as django_settings
 from django.forms import widgets
 from django.forms.widgets import Select
 from django.utils.module_loading import import_string
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from form_designer import settings
 from form_designer.models import FormDefinition, FormDefinitionField

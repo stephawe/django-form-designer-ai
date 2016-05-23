@@ -1,3 +1,5 @@
+# -- encoding: UTF-8 --
+from __future__ import unicode_literals
 from base64 import b64decode
 
 import pytest
@@ -36,7 +38,7 @@ def test_simple_form(rf):
         name='upload',
         field_class='django.forms.FileField',
     )
-    message = get_random_string()
+    message = 'å%sÖ' % get_random_string()
     request = rf.post('/', {
         'test': message,
         'upload': ContentFile(VERY_SMALL_JPEG, name='hello.jpg'),
