@@ -1,9 +1,10 @@
-from form_designer.contrib.exporters import FormLogExporterBase
-from form_designer import settings
-from django.utils.translation import ugettext_lazy as _
+import csv
+
 from django.http import HttpResponse
 
-import csv
+from form_designer import settings
+from form_designer.contrib.exporters import FormLogExporterBase
+
 
 class CsvExporter(FormLogExporterBase):
 
@@ -15,9 +16,10 @@ class CsvExporter(FormLogExporterBase):
         self.writer = csv.writer(self.response, delimiter=settings.CSV_EXPORT_DELIMITER)
 
     def init_response(self):
-        self.response = HttpResponse(mimetype='text/csv')
-        self.response['Content-Disposition'] = 'attachment; filename=%s.csv' %  \
-            unicode(self.model._meta.verbose_name_plural)
+        self.response = HttpResponse(content_type='text/csv')
+        self.response['Content-Disposition'] = (
+            'attachment; filename=%s.csv' % self.model._meta.verbose_name_plural
+        )
 
     def writerow(self, row):
         self.writer.writerow(row)

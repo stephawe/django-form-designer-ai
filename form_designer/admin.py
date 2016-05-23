@@ -1,13 +1,14 @@
+from django.conf.urls import url
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _, ugettext
-from django.conf.urls import patterns, url
-from django.contrib.admin.views.main import ChangeList
 from django.http import Http404
+from django.utils.module_loading import import_string
+from django.utils.translation import ugettext_lazy as _
 
-from form_designer.forms import FormDefinitionForm, FormDefinitionFieldInlineForm
-from form_designer.models import FormDefinition, FormDefinitionField, FormLog, FormValue
 from form_designer import settings
-from form_designer.utils import get_class
+from form_designer.forms import FormDefinitionFieldInlineForm, FormDefinitionForm
+from form_designer.models import FormDefinition
+from form_designer.models import FormDefinitionField
+from form_designer.models import FormLog
 
 
 class FormDefinitionFieldInline(admin.StackedInline):
@@ -49,9 +50,9 @@ class FormLogAdmin(admin.ModelAdmin):
     exporter_classes = {}
     exporter_classes_ordered = []
     for class_path in settings.EXPORTER_CLASSES:
-        cls = get_class(class_path)
+        cls = import_string(class_path)
         if cls.is_enabled():
-            exporter_classes[cls.export_format()] = cls 
+            exporter_classes[cls.export_format()] = cls
             exporter_classes_ordered.append(cls)
 
     def get_exporter_classes(self):
@@ -63,20 +64,24 @@ class FormLogAdmin(admin.ModelAdmin):
         for cls in self.get_exporter_classes():
             desc = _("Export selected %%(verbose_name_plural)s as %s") % cls.export_format()
             actions[cls.export_format()] = (cls.export_view, cls.export_format(), desc)
-            
+
         return actions
 
     # Disabling all edit links: Hack as found at http://stackoverflow.com/questions/1618728/disable-link-to-edit-object-in-djangos-admin-display-list-only
     def form_no_link(self, obj):
-        return '<a>'+obj.form_definition.__unicode__()+'</a>'
+        return '<a>%s</a>' % obj.form_definition
     form_no_link.admin_order_field = 'form_definition'
     form_no_link.allow_tags = True
     form_no_link.short_description = _('Form')
 
     def get_urls(self):
-        urls = patterns('',
-            url(r'^export/(?P<format>[a-zA-Z0-9_-]+)/$', self.admin_site.admin_view(self.export_view), name='form_designer_export'),
-        )
+        urls = [
+            url(
+                r'^export/(?P<format>[a-zA-Z0-9_-]+)/$',
+                self.admin_site.admin_view(self.export_view),
+                name='form_designer_export'
+            ),
+        ]
         return urls + super(FormLogAdmin, self).get_urls()
 
     def data_html(self, obj):
@@ -94,29 +99,32 @@ class FormLogAdmin(admin.ModelAdmin):
         ChangeList = self.get_changelist(request)
 
         cl = ChangeList(request, self.model, list_display,
-            list_display_links, list_filter, self.date_hierarchy,
-            self.search_fields, self.list_select_related,
-            self.list_per_page, self.list_max_show_all, self.list_editable,
-            self)
-        return cl.get_query_set(request)
+                        list_display_links, list_filter, self.date_hierarchy,
+                        self.search_fields, self.list_select_related,
+                        self.list_per_page, self.list_max_show_all, self.list_editable,
+                        self)
+
+        if hasattr(cl, "get_query_set"):  # Old Django versions
+            return cl.get_query_set(request)
+        return cl.get_queryset(request)
 
     def export_view(self, request, format):
         queryset = self.get_change_list_query_set(request)
-        if not format in self.exporter_classes:
+        if format not in self.exporter_classes:
             raise Http404()
         return self.exporter_classes[format](self.model).export(request, queryset)
 
     def changelist_view(self, request, extra_context=None):
-        from django.core.urlresolvers import reverse, NoReverseMatch
+        from django.core.urlresolvers import reverse
         extra_context = extra_context or {}
         try:
-            query_string = '?'+request.META['QUERY_STRING']
+            query_string = '?' + request.META['QUERY_STRING']
         except (TypeError, KeyError):
             query_string = ''
 
-        exporter_links = [] 
+        exporter_links = []
         for cls in self.get_exporter_classes():
-            url = reverse('admin:form_designer_export', args=(cls.export_format(),))+query_string
+            url = reverse('admin:form_designer_export', args=(cls.export_format(),)) + query_string
             exporter_links.append({'url': url, 'label': _('Export view as %s') % cls.export_format()})
 
         extra_context['exporters'] = exporter_links

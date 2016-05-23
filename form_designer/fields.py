@@ -1,6 +1,7 @@
-from django.db import models
+from __future__ import unicode_literals
 from django import forms
 from django.core.exceptions import ValidationError
+from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -17,7 +18,7 @@ class ModelNameFormField(forms.CharField):
     def clean(self, value):
         """
         Validates that the input matches the regular expression. Returns a
-        Unicode object.
+        string object.
         """
         value = super(ModelNameFormField, self).clean(value)
         if value == u'':
@@ -25,10 +26,11 @@ class ModelNameFormField(forms.CharField):
         if not ModelNameFormField.get_model_from_string(value):
             raise ValidationError(
                 _('Model could not be imported: %(value)s. Please use a valid model path.'),
-                    code='invalid',
-                    params={'value': value},
-                )
+                code='invalid',
+                params={'value': value},
+            )
         return value
+
 
 class ModelNameField(models.CharField):
 
@@ -43,6 +45,7 @@ class ModelNameField(models.CharField):
         defaults.update(kwargs)
         return super(ModelNameField, self).formfield(**defaults)
 
+
 class TemplateFormField(forms.CharField):
 
     def clean(self, value):
@@ -53,9 +56,10 @@ class TemplateFormField(forms.CharField):
         from django.template import Template, TemplateSyntaxError
         try:
             Template(value)
-        except TemplateSyntaxError, error:
+        except TemplateSyntaxError as error:
             raise ValidationError(error)
         return value
+
 
 class TemplateCharField(models.CharField):
 
@@ -66,6 +70,7 @@ class TemplateCharField(models.CharField):
         defaults.update(kwargs)
         return super(TemplateCharField, self).formfield(**defaults)
 
+
 class TemplateTextField(models.TextField):
 
     def formfield(self, **kwargs):
@@ -74,6 +79,7 @@ class TemplateTextField(models.TextField):
         defaults = {'form_class': TemplateFormField}
         defaults.update(kwargs)
         return super(TemplateTextField, self).formfield(**defaults)
+
 
 class RegexpExpressionFormField(forms.CharField):
 
@@ -85,9 +91,10 @@ class RegexpExpressionFormField(forms.CharField):
         import re
         try:
             re.compile(value)
-        except Exception, error:
+        except Exception as error:
             raise ValidationError(error)
         return value
+
 
 class RegexpExpressionField(models.CharField):
 

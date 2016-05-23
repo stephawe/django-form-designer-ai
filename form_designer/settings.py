@@ -1,8 +1,8 @@
 import os.path
 
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import get_storage_class
+from django.utils.translation import ugettext_lazy as _
 
 STATIC_URL = os.path.join(getattr(settings, 'STATIC_URL', settings.MEDIA_URL), 'form_designer')
 
@@ -80,16 +80,14 @@ FILE_STORAGE_CLASS = getattr(settings, 'FORM_DESIGNER_FILE_STORAGE_CLASS', get_s
 FILE_STORAGE_DIR = 'form_uploads'
 
 ALLOWED_FILE_TYPES = getattr(settings, 'FORM_DESIGNER_ALLOWED_FILE_TYPES', (
-    'aac', 'ace', 'ai', 'aiff', 'avi', 'bmp', 'dir', 'doc', 'docx', 'dmg', 'eps', 'fla', 'flv', 
-    'gif', 'gz', 'hqx', 'ico', 'indd', 'inx', 'jpg', 'jar', 'jpeg', 'md', 'mov', 
-    'mp3', 'mp4', 'mpc', 'mkv', 'mpg', 'mpeg', 'ogg', 'odg', 'odf', 'odp', 'ods', 'odt', 'otf', 
-    'pdf', 'png', 'pps', 'ppsx', 'ps', 'psd', 'rar', 'rm', 'rtf', 'sit', 'swf', 'tar', 'tga', 
+    'aac', 'ace', 'ai', 'aiff', 'avi', 'bmp', 'dir', 'doc', 'docx', 'dmg', 'eps', 'fla', 'flv',
+    'gif', 'gz', 'hqx', 'ico', 'indd', 'inx', 'jpg', 'jar', 'jpeg', 'md', 'mov',
+    'mp3', 'mp4', 'mpc', 'mkv', 'mpg', 'mpeg', 'ogg', 'odg', 'odf', 'odp', 'ods', 'odt', 'otf',
+    'pdf', 'png', 'pps', 'ppsx', 'ps', 'psd', 'rar', 'rm', 'rtf', 'sit', 'swf', 'tar', 'tga',
     'tif', 'tiff', 'ttf', 'txt', 'wav', 'wma', 'wmv', 'xls', 'xlsx', 'xml', 'zip'
 ))
 
-MAX_UPLOAD_SIZE = getattr(settings, 'MAX_UPLOAD_SIZE', 5242880) # 5M
-MAX_UPLOAD_TOTAL_SIZE = getattr(settings, 'MAX_UPLOAD_TOTAL_SIZE', 10485760) # 10M
+MAX_UPLOAD_SIZE = getattr(settings, 'MAX_UPLOAD_SIZE', 5242880)  # 5M
+MAX_UPLOAD_TOTAL_SIZE = getattr(settings, 'MAX_UPLOAD_TOTAL_SIZE', 10485760)  # 10M
 
-# If true, submitted values won't be stored as strings, but serialized to a PickleField,
-# preserving the original type.
-VALUE_PICKLEFIELD = getattr(settings, 'FORM_DESIGNER_VALUE_PICKLEFIELD', True)
+VALUE_PICKLEFIELD = True

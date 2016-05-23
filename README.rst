@@ -1,5 +1,16 @@
-Django Form Designer
-********************
+Django Form Designer (AI Fork)
+******************************
+
+Acknowledgements
+================
+
+This project is a fork of https://github.com/samluescher/django-form-designer .
+Thanks, @samluescher!
+
+This fork is compatible with Django 1.7+ and Python 2.7+.
+
+General
+=======
 
 A Django admin app with a GUI to create complex forms without any programming skills; 
 complete with logging, validation, and redirects.
@@ -19,21 +30,6 @@ complete with logging, validation, and redirects.
 * Signals on form render, submission, success, error.
 
 
-Installation
-============
-
-This install guide assumes that you are familiar with Python and Django.
-
-- Install the module using pip::
-
-    $ pip install git+git://github.com/philomat/django-form-designer.git#egg=django-form-designer
-
-  **or** download it from http://github.com/philomat/django-form-designer, and run the installation 
-  script::
-
-    $ python setup.py install
-
-
 Basic setup
 ===========
 
@@ -44,31 +40,9 @@ Basic setup
             'form_designer',
         )
 
-- Set up the database tables using::
-
-    $ manage.py syncdb
-
-  **or**, if you are using South::
-
-    $ manage.py migrate form_designer
-
-- If you are using ``django.contrib.staticfiles`` (recommended), just run the
-  usual command to collect static files::
-
-    $ python manage.py collectstatic
-
-  .. Note::
-     Please refer to the Django documentation on how to `set up the static files
-     app <https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/>`_ if
-     you have not done that yet.
-
-  If you are **not** going to use the ``staticfiles`` app, you will have to copy
-  the contents of the ``static`` folder to the location you are serving static
-  files from.
-
-- Add the URLs to your URL conf. For instance, in order to make a form named
-  ``example-form``   available under ``http://domain.com/forms/example-form``,
-  add the following line to your    project's ``urls.py``::
+- For basic usage, add URLs to your URL conf. For instance, in order to make a form named
+  ``example-form`` available under ``http://domain.com/forms/example-form``,
+  add the following line to your project's ``urls.py``::
 
     urlpatterns = patterns('',
         (r'^forms/', include('form_designer.urls')),
@@ -91,10 +65,6 @@ Using Django Form Designer with Django CMS
             'form_designer.contrib.cms_plugins.form_designer_form',
         )
 
-- Set up the database tables using::
-
-    $ manage.py syncdb
-
 You can now add forms to pages created with Django CMS. 
 
 
@@ -108,3 +78,8 @@ instead because you're already including it anyway, define JQUERY\_JS in your
 settings file. For instance::
 
     JQUERY_JS = 'jquery/jquery-latest.js'
+
+Running tests
+=============
+
+Use `tox`.

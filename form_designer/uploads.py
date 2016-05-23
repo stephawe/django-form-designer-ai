@@ -1,11 +1,16 @@
-from form_designer import settings as app_settings
-from django.core.files.base import File
-from django.forms.forms import NON_FIELD_ERRORS
-from django.utils.translation import ugettext_lazy as _
-from django.db.models.fields.files import FieldFile
-from django.template.defaultfilters import filesizeformat
+import hashlib
 import os
-import hashlib, uuid
+import uuid
+
+from django.core.files.base import File
+from django.db.models.fields.files import FieldFile
+from django.forms.forms import NON_FIELD_ERRORS
+from django.template.defaultfilters import filesizeformat
+from django.utils.encoding import python_2_unicode_compatible
+from django.utils.translation import ugettext_lazy as _
+
+from form_designer import settings as app_settings
+from form_designer.utils import get_random_hash
 
 
 def get_storage():
@@ -25,12 +30,12 @@ def clean_files(form):
         else:
             total_upload_size += uploaded_file._size
             if not os.path.splitext(uploaded_file.name)[1].lstrip('.').lower() in  \
-                app_settings.ALLOWED_FILE_TYPES:
-                    msg = _('This file type is not allowed.')
+                    app_settings.ALLOWED_FILE_TYPES:
+                msg = _('This file type is not allowed.')
             elif uploaded_file._size > app_settings.MAX_UPLOAD_SIZE:
                 msg = _('Please keep file size under %(max_size)s. Current size is %(size)s.') %  \
                     {'max_size': filesizeformat(app_settings.MAX_UPLOAD_SIZE),
-                    'size': filesizeformat(uploaded_file._size)}
+                     'size': filesizeformat(uploaded_file._size)}
         if msg:
             form._errors[field.name] = form.error_class([msg])
 
@@ -44,13 +49,13 @@ def clean_files(form):
             form._errors[NON_FIELD_ERRORS] = form.error_class([msg])
 
     return form.cleaned_data
-    
+
 
 def handle_uploaded_files(form_definition, form):
     files = []
     if form_definition.save_uploaded_files and len(form.file_fields):
         storage = get_storage()
-        secret_hash = hashlib.sha1(str(uuid.uuid4())).hexdigest()[:10]
+        secret_hash = get_random_hash(10)
         for field in form.file_fields:
             uploaded_file = form.cleaned_data.get(field.name, None)
             if uploaded_file is None:
@@ -58,21 +63,23 @@ def handle_uploaded_files(form_definition, form):
             valid_file_name = storage.get_valid_name(uploaded_file.name)
             root, ext = os.path.splitext(valid_file_name)
             filename = storage.get_available_name(
-                os.path.join(app_settings.FILE_STORAGE_DIR, 
-                form_definition.name, 
-                '%s_%s%s' % (root, secret_hash, ext)))
+                os.path.join(app_settings.FILE_STORAGE_DIR,
+                             form_definition.name,
+                             '%s_%s%s' % (root, secret_hash, ext)))
             storage.save(filename, uploaded_file)
             form.cleaned_data[field.name] = StoredUploadedFile(filename)
             files.append(storage.path(filename))
     return files
 
 
+@python_2_unicode_compatible
 class StoredUploadedFile(FieldFile):
     """
     A wrapper for uploaded files that is compatible to the FieldFile class, i.e.
     you can use instances of this class in templates just like you use the value
-    of FileFields (e.g. `{{ my_file.url }}`) 
+    of FileFields (e.g. `{{ my_file.url }}`)
     """
+
     def __init__(self, name):
         File.__init__(self, None, name)
         self.field = self
@@ -80,12 +87,12 @@ class StoredUploadedFile(FieldFile):
     @property
     def storage(self):
         return get_storage()
-        
+
     def save(self, *args, **kwargs):
-        raise NotImplementedError('Static files are read-only')
+        raise NotImplementedError('Static files are read-only')  # pragma: no cover
 
     def delete(self, *args, **kwargs):
-        raise NotImplementedError('Static files are read-only')
+        raise NotImplementedError('Static files are read-only')  # pragma: no cover
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
