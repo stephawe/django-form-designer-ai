@@ -10,6 +10,7 @@
 *.pyc
 *.so
 *.spec
+*.sqlite3
 .cache
 .coverage
 .coverage.*
