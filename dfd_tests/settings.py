@@ -32,6 +32,7 @@ INSTALLED_APPS = (
     'cms',
     'treebeard',
     'form_designer',
+    'form_designer.contrib.cms_plugins.form_designer_form',
 )
 
 CMS_TEMPLATES = [
