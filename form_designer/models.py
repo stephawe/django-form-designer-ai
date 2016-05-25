@@ -34,13 +34,13 @@ class FormDefinition(models.Model):
     private_hash = models.CharField(editable=False, max_length=40, default='')
     public_hash = models.CharField(editable=False, max_length=40, default='')
     title = models.CharField(_('title'), max_length=255, blank=True, null=True)
-    body = models.TextField(_('body'), blank=True, null=True)
+    body = models.TextField(_('body'), help_text=_('Form description. Display on form after title.'), blank=True, null=True)
     action = models.URLField(_('target URL'), help_text=_('If you leave this empty, the page where the form resides will be requested, and you can use the mail form and logging features. You can also send data to external sites: For instance, enter "http://www.google.ch/search" to create a search form.'), max_length=255, blank=True, null=True)
-    mail_to = TemplateCharField(_('send form data to e-mail address'), help_text=('Separate several addresses with a comma. Your form fields are available as template context. Example: "admin@domain.com, {{ from_email }}" if you have a field named `from_email`.'), max_length=255, blank=True, null=True)
-    mail_from = TemplateCharField(_('sender address'), max_length=255, help_text=('Your form fields are available as template context. Example: "{{ first_name }} {{ last_name }} <{{ from_email }}>" if you have fields named `first_name`, `last_name`, `from_email`.'), blank=True, null=True)
-    mail_subject = TemplateCharField(_('email subject'), max_length=255, help_text=('Your form fields are available as template context. Example: "Contact form {{ subject }}" if you have a field named `subject`.'), blank=True, null=True)
-    mail_uploaded_files = models.BooleanField(_('Send uploaded files as email attachments'), default=True)
-    method = models.CharField(_('method'), max_length=10, default="POST", choices=(('POST', 'POST'), ('GET', 'GET')))
+    mail_to = TemplateCharField(_('send form data to e-mail address'), help_text=_('Separate several addresses with a comma. Your form fields are available as template context. Example: "admin@domain.com, {{ from_email }}" if you have a field named `from_email`.'), max_length=255, blank=True, null=True)
+    mail_from = TemplateCharField(_('sender address'), max_length=255, help_text=_('Your form fields are available as template context. Example: "{{ first_name }} {{ last_name }} <{{ from_email }}>" if you have fields named `first_name`, `last_name`, `from_email`.'), blank=True, null=True)
+    mail_subject = TemplateCharField(_('email subject'), max_length=255, help_text=_('Your form fields are available as template context. Example: "Contact form {{ subject }}" if you have a field named `subject`.'), blank=True, null=True)
+    mail_uploaded_files  = models.BooleanField(_('Send uploaded files as email attachments'), default=True)
+    method = models.CharField(_('method'), max_length=10, default="POST", choices = (('POST', 'POST'), ('GET', 'GET')))
     success_message = models.CharField(_('success message'), max_length=255, blank=True, null=True)
     error_message = models.CharField(_('error message'), max_length=255, blank=True, null=True)
     submit_label = models.CharField(_('submit button label'), max_length=255, blank=True, null=True)
@@ -194,7 +194,7 @@ class FormDefinitionField(models.Model):
     name = models.SlugField(_('name'), max_length=255)
     label = models.CharField(_('label'), max_length=255, blank=True, null=True)
     required = models.BooleanField(_('required'), default=True)
-    include_result = models.BooleanField(_('include in result'), help_text=('If this is disabled, the field value will not be included in logs and e-mails generated from form data.'), default=True)
+    include_result = models.BooleanField(_('include in result'), help_text=_('If this is disabled, the field value will not be included in logs and e-mails generated from form data.'), default=True)
     widget = models.CharField(_('widget'), default='', max_length=255, blank=True, null=True)
     initial = models.TextField(_('initial value'), blank=True, null=True)
     help_text = models.CharField(_('help text'), max_length=255, blank=True, null=True)
@@ -301,6 +301,10 @@ class FormLog(models.Model):
     created = models.DateTimeField(_('Created'), auto_now=True)
     created_by = models.ForeignKey(getattr(django_settings, "AUTH_USER_MODEL", "auth.User"), null=True, blank=True)
     _data = None
+
+    class Meta:
+        verbose_name = _('form log')
+        verbose_name_plural = _('form logs')
 
     def __str__(self):
         return "%s (%s)" % (

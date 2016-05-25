@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.conf.urls import url
 from django.contrib import admin
 from django.http import Http404
@@ -27,6 +28,7 @@ class FormDefinitionFieldInline(admin.StackedInline):
 
 
 class FormDefinitionAdmin(admin.ModelAdmin):
+    save_as = True
     fieldsets = [
         (_('Basic'), {'fields': ['name', 'require_hash', 'method', 'action', 'title', 'body']}),
         (_('Settings'), {'fields': ['allow_get_initial', 'log_data', 'success_redirect', 'success_clear', 'display_logged', 'save_uploaded_files'], 'classes': ['collapse']}),
@@ -39,6 +41,7 @@ class FormDefinitionAdmin(admin.ModelAdmin):
     inlines = [
         FormDefinitionFieldInline,
     ]
+    search_fields = ('name', 'title')
 
 
 class FormLogAdmin(admin.ModelAdmin):

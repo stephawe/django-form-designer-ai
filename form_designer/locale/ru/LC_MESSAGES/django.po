@@ -1,0 +1,540 @@
+# django-form-designer locale.
+# This file is distributed under the same license as the
+# django-form-designer package.
+# Ivan Markeyev <markeev@gmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-11-22 04:43+0400\n"
+"PO-Revision-Date: 2011-09-20 09:50+0400\n"
+"Last-Translator: Anton Novosyolov <me@f-y.name>\n"
+"Language-Team: ru <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"Generated-By: Babel 0.9.6\n"
+
+msgid "Basic"
+msgstr "Основное"
+
+msgid "Choice"
+msgstr "Выбор"
+
+msgid "Choices"
+msgstr "Варианты выбора"
+
+msgid "Created"
+msgstr "Создан"
+
+msgid "Data"
+msgstr "Данные"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Date & time"
+msgstr "Дата/время"
+
+msgid "Decimal number"
+msgstr ""
+
+msgid "Default"
+msgstr "По умолчанию"
+
+msgid "Display"
+msgstr "Отображение"
+
+msgid "E-mail address"
+msgstr "Email адрес"
+
+#, python-format
+msgid "Export selected %%(verbose_name_plural)s as %s"
+msgstr "Экспортировать отмеченные записи из %%(verbose_name_plural)s как %s"
+
+#, python-format
+msgid "Export view as %s"
+msgstr "Экспортировать как %s"
+
+msgid "Fields"
+msgstr "Поля"
+
+msgid "File"
+msgstr "Файл"
+
+msgid "Form"
+msgstr "Форма"
+
+msgid "Form Designer"
+msgstr "Дизайнер форм"
+
+msgid "Form description. Display on form after title."
+msgstr ""
+"Описание формы. Выводится в виде текста после заголовка формы. Например, вы "
+"можете описать для заполняющего, что из себя представляет форма."
+
+msgid "Form log"
+msgstr "Заполненная форма"
+
+msgid "Form logs"
+msgstr "Заполненные формы"
+
+msgid "Forms"
+msgstr "Формы"
+
+msgid "HTTP redirect after successful submission"
+msgstr ""
+
+msgid "Hidden input"
+msgstr "Скрытое поле"
+
+msgid "ID"
+msgstr "Идентификатор"
+
+msgid "If enabled, the form can only be reached via a secret URL."
+msgstr ""
+"Если включена, эта форма может быть отображена только по секретному URL"
+
+msgid ""
+"If enabled, you can fill in form fields by adding them to the query string."
+msgstr "Если включена, можно заполнять поля формы добавляя их к строке запроса"
+
+msgid ""
+"If this is disabled, the field value will not be included in logs and e-"
+"mails generated from form data."
+msgstr ""
+"Если этот флаг включен, то значение данного поля не будет включено в журнал "
+"форм и в электронные письма при отправке формы."
+
+msgid ""
+"If you leave this empty, the page where the form resides will be requested, "
+"and you can use the mail form and logging features. You can also send data "
+"to external sites: For instance, enter \"http://www.google.ch/search\" to "
+"create a search form."
+msgstr ""
+"Если оставить это поле пустым, данные отправятся на страницу, откуда форма "
+"запрошена, также можно использовать отправку формы по почте и "
+"протоколирование введенных данных. Можно также посылать данные на внешние "
+"сайты: например, введите \"http://www.google.ru/search\" для создания формы "
+"поиска."
+
+msgid "Logs all form submissions to the database."
+msgstr "Сохранять в базу данных все заполнения формы."
+
+msgid "Mail form"
+msgstr "Отправка формы по почте"
+
+msgid "Messages"
+msgstr "Сообщения"
+
+msgid "Model Choice"
+msgstr "Выбор из модели"
+
+msgid "Model Choices"
+msgstr "Варианты выбора из модели"
+
+msgid "Model Multiple Choice"
+msgstr "Множественный выбор из модели"
+
+#, python-format
+msgid "Model could not be imported: %(value)s. Please use a valid model path."
+msgstr "Модель не может быть импортирована: %(value)s. Проверьте адрес модели."
+
+msgid "Multiple Choice"
+msgstr "Множественный выбор"
+
+msgid "Number"
+msgstr "Число"
+
+msgid "Numbers"
+msgstr "Числа"
+
+msgid "One label per line"
+msgstr "Одна подпись на строку"
+
+msgid "One value per line"
+msgstr "Одно значение на строку"
+
+msgid "Password input"
+msgstr "Ввод пароля"
+
+#, python-format
+msgid "Please keep file size under %(max_size)s. Current size is %(size)s."
+msgstr ""
+"Размер файла должен быть не более %(max_size)s. Текущий размер %(size)s."
+
+#, python-format
+msgid ""
+"Please keep total file size under %(max)s. Current total size is %(current)s."
+msgstr ""
+"Общий объем данных должен быть не более %(max)s. Сейчас общий объем "
+"составляет %(current)s."
+
+msgid "Radio button"
+msgstr "Радиокнопка"
+
+msgid "Regex"
+msgstr "Регулярное выражение"
+
+msgid "Saves all uploaded files using server storage."
+msgstr "Сохраняет все загруженные файлы на сервер"
+
+msgid "Send uploaded files as email attachments"
+msgstr "Отправить загруженные файлы как вложения"
+
+msgid ""
+"Separate several addresses with a comma. Your form fields are available as "
+"template context. Example: \"admin@domain.com, {{ from_email }}\" if you "
+"have a field named `from_email`."
+msgstr ""
+"Отделяйте несколько адресов запятыми. Ваши поля формы доступны в контексте "
+"шаблона. Например: \"admin@domain.com, {{from_email}}\", если у вас есть "
+"поле с именем `from_email`."
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Submit"
+msgstr "Отправить"
+
+msgid "Templates"
+msgstr "Шаблоны"
+
+msgid "Text"
+msgstr "Текст"
+
+msgid "Text area"
+msgstr "Текстовое поле"
+
+msgid "Thank you, the data was submitted successfully."
+msgstr "Спасибо, данные отправлены успешно."
+
+msgid "The data could not be submitted, please try again."
+msgstr "Данные не могут быть отправлены, пожалуйста, попробуйте еще раз."
+
+msgid "This field class requires a model."
+msgstr "Этот класс поля требует модель."
+
+msgid "This field class requires a regular expression."
+msgstr "Этот класс поля требует модель."
+
+msgid "This field is required."
+msgstr "Это поле является обязательным."
+
+msgid "This file type is not allowed."
+msgstr "Этот тип файла не разрешен."
+
+msgid "Time"
+msgstr "Время"
+
+msgid "Warning!"
+msgstr "Внимание!"
+
+msgid "Web address"
+msgstr "Интернет адрес"
+
+msgid "Yes/No"
+msgstr "Да/Нет"
+
+msgid ""
+"Your form fields are available as template context. Example: \"Contact form "
+"{{ subject }}\" if you have a field named `subject`."
+msgstr ""
+"Ваши поля формы доступны в контексте шаблона. Например: \"Контактная форма "
+"{{ subject }}\", если у вас есть поле с именем `subject`."
+
+msgid ""
+"Your form fields are available as template context. Example: "
+"\"{{ first_name }} {{ last_name }} <{{ from_email }}>\" if you have fields "
+"named `first_name`, `last_name`, `from_email`."
+msgstr ""
+"Ваши поля формы доступны в контексте шаблона. Например: \"{{first_name}} "
+"{{last_name}} <{{from_email}}>\", если у вас есть поля, названные "
+"`first_name`,` last_name`, `from_email`."
+
+msgid ""
+"Your form fields are available as template context. Example: "
+"\"{{ message }}\" if you have a field named `message`. To iterate over all "
+"fields, use the variable `data` (a list containing a dictionary for each "
+"form field, each containing the elements `name`, `label`, `value`)."
+msgstr ""
+
+msgid "allow initial values via URL"
+msgstr "разрешить передачу инициализирующих форму данных через URL"
+
+msgid "as paragraphs"
+msgstr "как параграфы"
+
+msgid "as table"
+msgstr "как таблица"
+
+msgid "as table (horizontal)"
+msgstr "как таблица (горизонтально)"
+
+msgid "as unordered list"
+msgstr "как неупорядоченный список"
+
+msgid "body"
+msgstr "тело"
+
+msgid "bootstrap3"
+msgstr "bootstrap3"
+
+msgid "clear form after successful submission"
+msgstr "очищать форму после успешной отправки"
+
+msgid "custom implementation"
+msgstr "своя реализация"
+
+msgid "data model"
+msgstr "модель данных"
+
+msgid "decimal places"
+msgstr "десятичных разрядов"
+
+msgid "display logged submissions with form"
+msgstr "показать отправленные данные на странице с формой"
+
+msgid "email subject"
+msgstr "тема письма"
+
+msgid "empty label"
+msgstr "пустая метка"
+
+msgid "error message"
+msgstr "сообщение при ошибке"
+
+msgid "field"
+msgstr "поле"
+
+msgid "field class"
+msgstr "класс поля"
+
+msgid "field name"
+msgstr "название поля"
+
+msgid "fields"
+msgstr "поля"
+
+msgid "form"
+msgstr "форма"
+
+msgid "form template"
+msgstr "шаблон формы"
+
+msgid "help text"
+msgstr "подсказка для поля"
+
+msgid "include in result"
+msgstr "включать в результат"
+
+msgid "initial value"
+msgstr "начальное значение"
+
+msgid "label"
+msgstr "заголовок"
+
+msgid "labels"
+msgstr "заголовки"
+
+msgid "log form data"
+msgstr "логировать данные форм"
+
+msgid "max. digits"
+msgstr "максимум цифр"
+
+msgid "max. length"
+msgstr "максимальная длина"
+
+msgid "max. value"
+msgstr "максимальное значение"
+
+msgid "message template"
+msgstr "шаблон сообщения"
+
+msgid "method"
+msgstr "метод"
+
+msgid "min. length"
+msgstr "минимальная длина"
+
+msgid "min. value"
+msgstr "минимальное значение"
+
+msgid "name"
+msgstr "наименование"
+
+msgid "no"
+msgstr "нет"
+
+msgid "obfuscate URL to this form"
+msgstr "делать обфускацию адреса отправки для формы"
+
+msgid "position"
+msgstr "позиция"
+
+msgid "regular Expression"
+msgstr "регулярное выражение"
+
+msgid "required"
+msgstr "обязательное"
+
+msgid "save uploaded files"
+msgstr "сохранять прикрепленные к форме файлы"
+
+msgid "send form data to e-mail address"
+msgstr "отправлять данные формы на электронный адрес"
+
+msgid "sender address"
+msgstr "адрес отправителя"
+
+msgid "submit button label"
+msgstr "заголовок кнопки «Отправить»"
+
+msgid "success message"
+msgstr "сообщение при успешной отправке"
+
+msgid "target URL"
+msgstr "адрес для отправки формы"
+
+msgid "title"
+msgstr "заголовок"
+
+msgid "value"
+msgstr "значение"
+
+msgid "values"
+msgstr "значения"
+
+msgid "widget"
+msgstr "виджет"
+
+msgid "yes"
+msgstr "да"
+
+msgid "Allow initial values via URL"
+msgstr "Позволять заполнять первоначальные значения с помощью URL"
+
+msgid "Body"
+msgstr "Описание (подзаголовок)"
+
+msgid "Body is html"
+msgstr "Описание - HTML"
+
+msgid "CSV export is not enabled."
+msgstr "Экспорт в CSV не включен."
+
+msgid "Clear form after successful submission"
+msgstr "Очищать форму после успешной отправки"
+
+msgid "Empty label"
+msgstr "Пустая подпись"
+
+msgid "Error message"
+msgstr "Сообщение при ошибке"
+
+msgid "Export CSV"
+msgstr "Экспорт в CSV"
+
+msgid "Export XLS"
+msgstr "Экспорт в XLS"
+
+msgid "Field"
+msgstr "Поле"
+
+msgid "Field class"
+msgstr "Класс поля"
+
+msgid "Form template"
+msgstr "Шаблоны форм"
+
+msgid "Help text"
+msgstr "Текст помощи"
+
+msgid "If enabled, render body as HTML."
+msgstr "Если включена, отображать описание как HTML."
+
+msgid "Include in result"
+msgstr "Включать в результат"
+
+msgid "Initial value"
+msgstr "Значение по умолчанию"
+
+msgid "Label"
+msgstr "Подпись"
+
+msgid "Labels"
+msgstr "Подписи"
+
+msgid "Log form data"
+msgstr "Сохранять в протокол данные формы"
+
+msgid "Max. length"
+msgstr "Максимальная длина"
+
+msgid "Max. value"
+msgstr "Максимальное значение"
+
+msgid "Message template"
+msgstr "Шаблон сообщения"
+
+msgid "Method"
+msgstr "Метод отправки формы"
+
+msgid "Min. length"
+msgstr "Минимальная длина"
+
+msgid "Min. value"
+msgstr "Минимальное значение"
+
+msgid "Name"
+msgstr "Название"
+
+msgid "Obfuscate URL to this form"
+msgstr "Запутать URL"
+
+msgid "Please keep file size under %s. Current size is %s."
+msgstr "Размер файла должен быть меньше %s. Текущий размер %s."
+
+msgid "Position"
+msgstr "Позиция"
+
+msgid "Required"
+msgstr "Требуемое"
+
+msgid "Save uploaded files"
+msgstr "Сохранять загруженные файлы"
+
+msgid "Send form data to e-mail address"
+msgstr "Послать данные формы на email адрес"
+
+msgid "Sender address"
+msgstr "Адрес отправителя"
+
+msgid "Submit button label"
+msgstr "Подпись кнопки отправки формы"
+
+msgid "Success message"
+msgstr "Сообщение при успешной отправке формы"
+
+msgid "Target URL"
+msgstr "URL, куда отправлять данные формы"
+
+msgid "Title"
+msgstr "Заголовок"
+
+msgid "Values"
+msgstr "Значения"
+
+msgid "Widget"
+msgstr "Виджет"
+
+msgid "XLS export is not enabled."
+msgstr "Экспорт в CSV не включен."
+
+msgid "e-Mail subject"
+msgstr "Тема письма"
