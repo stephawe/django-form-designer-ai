@@ -1,16 +1,17 @@
 # -- encoding: UTF-8 --
 from __future__ import unicode_literals
-from base64 import b64decode
 
-import pytest
+from base64 import b64decode
 
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.base import BaseStorage
 from django.core import mail
 from django.core.files.base import ContentFile, File
 from django.utils.crypto import get_random_string
-from form_designer.contrib.exporters.xls_exporter import XlsExporter
+
+import pytest
 from form_designer.contrib.exporters.csv_exporter import CsvExporter
+from form_designer.contrib.exporters.xls_exporter import XlsExporter
 from form_designer.models import FormDefinition, FormDefinitionField, FormLog, FormValue
 from form_designer.views import process_form
 

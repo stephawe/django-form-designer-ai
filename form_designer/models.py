@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import re
+from collections import OrderedDict
 from decimal import Decimal
 
 import django
@@ -8,15 +9,12 @@ from django.conf import settings as django_settings
 from django.db import models
 from django.utils.module_loading import import_string
 from django.utils.six import python_2_unicode_compatible
-
-from collections import OrderedDict
-
 from django.utils.translation import ugettext_lazy as _
-from picklefield.fields import PickledObjectField
 
 from form_designer import settings
 from form_designer.fields import ModelNameField, RegexpExpressionField, TemplateCharField, TemplateTextField
 from form_designer.utils import get_random_hash
+from picklefield.fields import PickledObjectField
 
 
 class FormValueDict(dict):
@@ -39,8 +37,8 @@ class FormDefinition(models.Model):
     mail_to = TemplateCharField(_('send form data to e-mail address'), help_text=_('Separate several addresses with a comma. Your form fields are available as template context. Example: "admin@domain.com, {{ from_email }}" if you have a field named `from_email`.'), max_length=255, blank=True, null=True)
     mail_from = TemplateCharField(_('sender address'), max_length=255, help_text=_('Your form fields are available as template context. Example: "{{ first_name }} {{ last_name }} <{{ from_email }}>" if you have fields named `first_name`, `last_name`, `from_email`.'), blank=True, null=True)
     mail_subject = TemplateCharField(_('email subject'), max_length=255, help_text=_('Your form fields are available as template context. Example: "Contact form {{ subject }}" if you have a field named `subject`.'), blank=True, null=True)
-    mail_uploaded_files  = models.BooleanField(_('Send uploaded files as email attachments'), default=True)
-    method = models.CharField(_('method'), max_length=10, default="POST", choices = (('POST', 'POST'), ('GET', 'GET')))
+    mail_uploaded_files = models.BooleanField(_('Send uploaded files as email attachments'), default=True)
+    method = models.CharField(_('method'), max_length=10, default="POST", choices=(('POST', 'POST'), ('GET', 'GET')))
     success_message = models.CharField(_('success message'), max_length=255, blank=True, null=True)
     error_message = models.CharField(_('error message'), max_length=255, blank=True, null=True)
     submit_label = models.CharField(_('submit button label'), max_length=255, blank=True, null=True)
