@@ -21,26 +21,13 @@ VERY_SMALL_JPEG = b64decode(
     'yQALCAABAAEBAREA/8wABgAQEAX/2gAIAQEAAD8A0s8g/9k='
 )
 
+
 @pytest.mark.django_db
-def test_simple_form(rf):
-    fd = FormDefinition.objects.create(
-        mail_to='test@example.com',
-        mail_subject='Someone sent you a greeting: {{ test }}'
-    )
-    FormDefinitionField.objects.create(
-        form_definition=fd,
-        name='test',
-        label='Greeting',
-        field_class='django.forms.CharField',
-    )
-    FormDefinitionField.objects.create(
-        form_definition=fd,
-        name='upload',
-        field_class='django.forms.FileField',
-    )
+def test_simple_form(rf, greeting_form):
+    fd = greeting_form
     message = 'å%sÖ' % get_random_string()
     request = rf.post('/', {
-        'test': message,
+        'greeting': message,
         'upload': ContentFile(VERY_SMALL_JPEG, name='hello.jpg'),
         fd.submit_flag_name: 'true',
     })
@@ -50,7 +37,7 @@ def test_simple_form(rf):
     # Test that the form log was saved:
     flog = FormLog.objects.get(form_definition=fd)
     name_to_value = {d['name']: d['value'] for d in flog.data}
-    assert name_to_value['test'] == message
+    assert name_to_value['greeting'] == message
     assert isinstance(name_to_value['upload'], File)
 
     # Test that the email was sent:
