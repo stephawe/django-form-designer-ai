@@ -8,9 +8,9 @@ from django.contrib.auth.models import AnonymousUser
 from django.core import mail
 from django.core.files.base import ContentFile, File
 from django.utils.crypto import get_random_string
-
+from form_designer.contrib.exporters.xls_exporter import XlsExporter
 from form_designer.contrib.exporters.csv_exporter import CsvExporter
-from form_designer.models import FormDefinition, FormDefinitionField, FormLog
+from form_designer.models import FormDefinition, FormDefinitionField, FormLog, FormValue
 from form_designer.views import process_form
 
 # https://raw.githubusercontent.com/mathiasbynens/small/master/jpeg.jpg
@@ -43,11 +43,35 @@ def test_simple_form(rf, greeting_form):
     # Test that the email was sent:
     assert message in mail.outbox[-1].subject
 
-    # TODO: Improve CSV test
-    csv_data = CsvExporter(fd).export(
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('exporter', [
+    CsvExporter,
+    XlsExporter,
+])
+@pytest.mark.parametrize('n_logs', range(5))
+def test_export(rf, greeting_form, exporter, n_logs):
+    message = u'Térve'
+    for n in range(n_logs):
+        fl = FormLog.objects.create(
+            form_definition=greeting_form
+        )
+        FormValue.objects.create(
+            form_log=fl,
+            field_name='greeting',
+            value="%s %d" % (message, n + 1),
+        )
+
+    resp = exporter(greeting_form).export(
         request=rf.get("/"),
-        queryset=FormLog.objects.filter(form_definition=fd)
-    ).content.decode("utf8").splitlines()
-    assert csv_data[0].startswith("Created")
-    assert "Greeting" in csv_data[0]
-    assert message in csv_data[1]
+        queryset=FormLog.objects.filter(form_definition=greeting_form)
+    )
+    if 'csv' in resp['content-type']:
+        # TODO: Improve CSV test?
+        csv_data = resp.content.decode("utf8").splitlines()
+        if n_logs > 0:  # The file will be empty if no logs exist
+            assert csv_data[0].startswith("Created")
+            assert "Greeting" in csv_data[0]
+            for i in range(1, n_logs):
+                assert message in csv_data[i]
+                assert ("%s" % i) in csv_data[i]
