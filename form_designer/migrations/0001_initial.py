@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('private_hash', models.CharField(default='', editable=False, max_length=40)),
                 ('public_hash', models.CharField(default='', editable=False, max_length=40)),
                 ('title', models.CharField(blank=True, max_length=255, null=True, verbose_name='title')),
-                ('body', models.TextField(blank=True, null=True, verbose_name='body')),
+                ('body', models.TextField(blank=True, null=True, verbose_name='body', help_text='Form description. Display on form after title.')),
                 ('action', models.URLField(blank=True, help_text='If you leave this empty, the page where the form resides will be requested, and you can use the mail form and logging features. You can also send data to external sites: For instance, enter "http://www.google.ch/search" to create a search form.', max_length=255, null=True, verbose_name='target URL')),
                 ('mail_to', form_designer.fields.TemplateCharField(blank=True, help_text='Separate several addresses with a comma. Your form fields are available as template context. Example: "admin@domain.com, {{ from_email }}" if you have a field named `from_email`.', max_length=255, null=True, verbose_name='send form data to e-mail address')),
                 ('mail_from', form_designer.fields.TemplateCharField(blank=True, help_text='Your form fields are available as template context. Example: "{{ first_name }} {{ last_name }} <{{ from_email }}>" if you have fields named `first_name`, `last_name`, `from_email`.', max_length=255, null=True, verbose_name='sender address')),
@@ -91,6 +91,10 @@ class Migration(migrations.Migration):
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
                 ('form_definition', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='logs', to='form_designer.FormDefinition')),
             ],
+            options={
+                'verbose_name': 'form log',
+                'verbose_name_plural': 'form logs',
+            }
         ),
         migrations.CreateModel(
             name='FormValue',
