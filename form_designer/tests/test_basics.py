@@ -5,6 +5,7 @@ from base64 import b64decode
 import pytest
 
 from django.contrib.auth.models import AnonymousUser
+from django.contrib.messages.storage.base import BaseStorage
 from django.core import mail
 from django.core.files.base import ContentFile, File
 from django.utils.crypto import get_random_string
@@ -23,25 +24,47 @@ VERY_SMALL_JPEG = b64decode(
 
 
 @pytest.mark.django_db
-def test_simple_form(rf, greeting_form):
+@pytest.mark.parametrize('push_messages', (False, True))
+@pytest.mark.parametrize('valid_data', (False, True))
+@pytest.mark.parametrize('method', ('GET', 'POST'))
+@pytest.mark.parametrize('anon', (False, True))
+def test_simple_form(rf, admin_user, greeting_form, push_messages, valid_data, method, anon):
     fd = greeting_form
     message = 'å%sÖ' % get_random_string()
-    request = rf.post('/', {
+    data = {
         'greeting': message,
         'upload': ContentFile(VERY_SMALL_JPEG, name='hello.jpg'),
         fd.submit_flag_name: 'true',
-    })
-    request.user = AnonymousUser()
-    process_form(request, fd, push_messages=False)
+    }
+    if not valid_data:
+        data.pop('greeting')
 
-    # Test that the form log was saved:
-    flog = FormLog.objects.get(form_definition=fd)
-    name_to_value = {d['name']: d['value'] for d in flog.data}
-    assert name_to_value['greeting'] == message
-    assert isinstance(name_to_value['upload'], File)
+    if method == 'POST':
+        request = rf.post('/', data)
+    elif method == 'GET':
+        data.pop('upload')  # can't upload via GET
+        request = rf.get('/', data)
 
-    # Test that the email was sent:
-    assert message in mail.outbox[-1].subject
+    request.user = (AnonymousUser() if anon else admin_user)
+    request._messages = BaseStorage(request)
+    context = process_form(request, fd, push_messages=push_messages, disable_redirection=True)
+    assert context['form_success'] == valid_data
+
+    # Test that a message was (or was not) pushed
+    assert len(request._messages._queued_messages) == int(push_messages)
+
+    if valid_data:
+        # Test that the form log was saved:
+        flog = FormLog.objects.get(form_definition=fd)
+        name_to_value = {d['name']: d['value'] for d in flog.data}
+        assert name_to_value['greeting'] == message
+        if name_to_value.get('upload'):
+            assert isinstance(name_to_value['upload'], File)
+        if not anon:
+            assert flog.created_by == admin_user
+
+        # Test that the email was sent:
+        assert message in mail.outbox[-1].subject
 
 
 @pytest.mark.django_db
