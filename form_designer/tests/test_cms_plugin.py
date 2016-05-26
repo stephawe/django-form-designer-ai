@@ -1,9 +1,9 @@
-import pytest
-from cms import api
-from cms.page_rendering import render_page
 from django.contrib.auth.models import AnonymousUser
 from django.utils.crypto import get_random_string
 
+import pytest
+from cms import api
+from cms.page_rendering import render_page
 from form_designer.contrib.cms_plugins.form_designer_form.cms_plugins import FormDesignerPlugin
 from form_designer.models import FormDefinition, FormDefinitionField
 

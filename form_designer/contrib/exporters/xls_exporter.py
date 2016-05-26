@@ -1,15 +1,15 @@
 from __future__ import unicode_literals
-from django.http import HttpResponse
-from django.utils.encoding import smart_text
 
-from form_designer import settings
+from django.http import HttpResponse
+from django.utils.encoding import force_text
+
 from form_designer.contrib.exporters import FormLogExporterBase
 
 try:
     import xlwt
-except ImportError:
+except ImportError:  # pragma: no cover
     XLWT_INSTALLED = False
-else:
+else:  # pragma: no cover
     XLWT_INSTALLED = True
 
 
@@ -25,7 +25,7 @@ class XlsExporter(FormLogExporterBase):
 
     def init_writer(self):
         self.wb = xlwt.Workbook()
-        self.ws = self.wb.add_sheet(smart_text(self.model._meta.verbose_name_plural))
+        self.ws = self.wb.add_sheet(force_text(self.model._meta.verbose_name_plural))
         self.rownum = 0
 
     def init_response(self):
@@ -36,7 +36,7 @@ class XlsExporter(FormLogExporterBase):
 
     def writerow(self, row):
         for i, f in enumerate(row):
-            self.ws.write(self.rownum, i, smart_text(f, encoding=settings.CSV_EXPORT_ENCODING))
+            self.ws.write(self.rownum, i, force_text(f))
         self.rownum += 1
 
     def close(self):

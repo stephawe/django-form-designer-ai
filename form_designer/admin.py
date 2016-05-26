@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+
 from django.conf.urls import url
 from django.contrib import admin
 from django.http import Http404
@@ -7,9 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from form_designer import settings
 from form_designer.forms import FormDefinitionFieldInlineForm, FormDefinitionForm
-from form_designer.models import FormDefinition
-from form_designer.models import FormDefinitionField
-from form_designer.models import FormLog
+from form_designer.models import FormDefinition, FormDefinitionField, FormLog
 
 
 class FormDefinitionFieldInline(admin.StackedInline):
