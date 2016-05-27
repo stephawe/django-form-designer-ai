@@ -1,23 +1,18 @@
 # encoding=utf8
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='django-form-designer-ai',
-    version='0.9.2',
+    version='0.9.3',
     url='http://github.com/andersinno/django-form-designer-ai',
     license='BSD',
     maintainer='Anders Innovations Ltd',
     maintainer_email='info@anders.fi',
-    packages=[
+    packages=find_packages('.', include=[
         'form_designer',
-        'form_designer.migrations',
-        'form_designer.templatetags',
-        'form_designer.contrib',
-        'form_designer.contrib.exporters',
-        'form_designer.contrib.cms_plugins',
-        'form_designer.contrib.cms_plugins.form_designer_form',
-    ],
+        'form_designer.*',
+    ]),
     include_package_data=True,
     classifiers=[
         'Development Status :: 4 - Beta',
