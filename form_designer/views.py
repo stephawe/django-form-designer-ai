@@ -4,16 +4,27 @@ from django.core.context_processors import csrf
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
+from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 
 from form_designer import settings as app_settings
-from form_designer.forms import DesignedForm
 from form_designer.models import FormDefinition
 from form_designer.signals import designedform_error, designedform_render, designedform_submit, designedform_success
 from form_designer.uploads import handle_uploaded_files
 
 
-def process_form(request, form_definition, extra_context={}, disable_redirection=False, push_messages=True):
+def get_designed_form_class():
+    return import_string(app_settings.DESIGNED_FORM_CLASS)
+
+
+def process_form(
+    request, form_definition, extra_context=None, disable_redirection=False, push_messages=True,
+    form_class=None
+):
+    if extra_context is None:
+        extra_context = {}
+    if form_class is None:
+        form_class = get_designed_form_class()
     context = extra_context
     success_message = form_definition.success_message or _('Thank you, the data was submitted successfully.')
     error_message = form_definition.error_message or _('The data could not be submitted, please try again.')
@@ -22,10 +33,10 @@ def process_form(request, form_definition, extra_context={}, disable_redirection
     is_submit = False
     # If the form has been submitted...
     if request.method == 'POST' and request.POST.get(form_definition.submit_flag_name):
-        form = DesignedForm(form_definition, None, request.POST, request.FILES)
+        form = form_class(form_definition, None, request.POST, request.FILES)
         is_submit = True
     if request.method == 'GET' and request.GET.get(form_definition.submit_flag_name):
-        form = DesignedForm(form_definition, None, request.GET)
+        form = form_class(form_definition, None, request.GET)
         is_submit = True
 
     if is_submit:
@@ -50,7 +61,7 @@ def process_form(request, form_definition, extra_context={}, disable_redirection
             if form_definition.success_redirect and not disable_redirection:
                 return HttpResponseRedirect(form_definition.action or '?')
             if form_definition.success_clear:
-                form = DesignedForm(form_definition)  # clear form
+                form = form_class(form_definition)  # clear form
         else:
             form_error = True
             designedform_error.send(sender=process_form, context=context,
@@ -59,9 +70,9 @@ def process_form(request, form_definition, extra_context={}, disable_redirection
                 messages.error(request, error_message)
     else:
         if form_definition.allow_get_initial:
-            form = DesignedForm(form_definition, initial_data=request.GET)
+            form = form_class(form_definition, initial_data=request.GET)
         else:
-            form = DesignedForm(form_definition)
+            form = form_class(form_definition)
         designedform_render.send(sender=process_form, context=context,
                                  form_definition=form_definition, request=request)
 
