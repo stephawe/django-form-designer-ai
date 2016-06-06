@@ -95,7 +95,11 @@ def test_simple_form(
             assert flog.created_by == admin_user
 
         # Test that the email was sent:
-        assert message in mail.outbox[-1].subject
+        sent_email = mail.outbox[-1]
+
+        assert message in sent_email.subject  # (since we customized the subject with a template)
+        assert 'greetingbot' in sent_email.message().get("Reply-To")  # (since we customized the reply-to address)
+
 
 
 @pytest.mark.django_db
