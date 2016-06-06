@@ -6,7 +6,8 @@ def greeting_form():
     from form_designer.models import FormDefinition, FormDefinitionField
     fd = FormDefinition.objects.create(
         mail_to='test@example.com',
-        mail_subject='Someone sent you a greeting: {{ greeting }}'
+        mail_subject='Someone sent you a greeting: {{ greeting }}',
+        mail_reply_to='Greeting Bot <greetingbot@example.com>',
     )
     FormDefinitionField.objects.create(
         form_definition=fd,

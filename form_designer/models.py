@@ -17,6 +17,11 @@ from form_designer import settings
 from form_designer.fields import ModelNameField, RegexpExpressionField, TemplateCharField, TemplateTextField
 from form_designer.utils import get_random_hash, string_template_replace
 
+MAIL_TEMPLATE_CONTEXT_HELP_TEXT = _(
+    'Your form fields are available as template context. '
+    'Example: "{{ first_name }} {{ last_name }} <{{ from_email }}>" '
+    'if you have fields named `first_name`, `last_name`, `from_email`.'
+)
 
 class FormValueDict(dict):
     def __init__(self, name, value, label):
@@ -36,7 +41,8 @@ class FormDefinition(models.Model):
     body = models.TextField(_('body'), help_text=_('Form description. Display on form after title.'), blank=True, null=True)
     action = models.URLField(_('target URL'), help_text=_('If you leave this empty, the page where the form resides will be requested, and you can use the mail form and logging features. You can also send data to external sites: For instance, enter "http://www.google.ch/search" to create a search form.'), max_length=255, blank=True, null=True)
     mail_to = TemplateCharField(_('send form data to e-mail address'), help_text=_('Separate several addresses with a comma. Your form fields are available as template context. Example: "admin@domain.com, {{ from_email }}" if you have a field named `from_email`.'), max_length=255, blank=True, null=True)
-    mail_from = TemplateCharField(_('sender address'), max_length=255, help_text=_('Your form fields are available as template context. Example: "{{ first_name }} {{ last_name }} <{{ from_email }}>" if you have fields named `first_name`, `last_name`, `from_email`.'), blank=True, null=True)
+    mail_from = TemplateCharField(_('sender address'), max_length=255, help_text=MAIL_TEMPLATE_CONTEXT_HELP_TEXT, blank=True, null=True)
+    mail_reply_to = TemplateCharField(_('reply-to address'), max_length=255, help_text=MAIL_TEMPLATE_CONTEXT_HELP_TEXT, blank=True)
     mail_subject = TemplateCharField(_('email subject'), max_length=255, help_text=_('Your form fields are available as template context. Example: "Contact form {{ subject }}" if you have a field named `subject`.'), blank=True, null=True)
     mail_uploaded_files = models.BooleanField(_('Send uploaded files as email attachments'), default=True)
     method = models.CharField(_('method'), max_length=10, default="POST", choices=(('POST', 'POST'), ('GET', 'GET')))
