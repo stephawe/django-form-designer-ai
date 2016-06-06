@@ -7,14 +7,15 @@ from decimal import Decimal
 import django
 from django.conf import settings as django_settings
 from django.db import models
+from django.utils.deprecation import warn_about_renamed_method
 from django.utils.module_loading import import_string
 from django.utils.six import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
+from picklefield.fields import PickledObjectField
 
 from form_designer import settings
 from form_designer.fields import ModelNameField, RegexpExpressionField, TemplateCharField, TemplateTextField
-from form_designer.utils import get_random_hash
-from picklefield.fields import PickledObjectField
+from form_designer.utils import get_random_hash, string_template_replace
 
 
 class FormValueDict(dict):
@@ -128,14 +129,12 @@ class FormDefinition(models.Model):
         flog.save()
         return flog
 
+    @warn_about_renamed_method(
+        'FormDefinition', 'string_template_replace', 'form_designer.utils.string_template_replace',
+        DeprecationWarning
+    )
     def string_template_replace(self, text, context_dict):
-        # TODO: refactor, move to utils
-        from django.template import Context, Template, TemplateSyntaxError
-        try:
-            t = Template(text)
-            return t.render(Context(context_dict))
-        except TemplateSyntaxError:
-            return text
+        return string_template_replace(text, context_dict)
 
     def send_mail(self, form, files=None):
         if not self.mail_to:
