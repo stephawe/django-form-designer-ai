@@ -32,5 +32,5 @@
     {% for field in form.hidden_fields %}
         {{ field }}
     {% endfor %}
-    {% csrf_token %}
+    {% if form_definition.method == "POST" %}{% csrf_token %}{% endif %}
 </form>
