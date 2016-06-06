@@ -62,6 +62,8 @@ class FormDefinitionFieldInlineForm(forms.ModelForm):
                 continue
             if field_name in self.fields:
                 self.fields[field_name].widget = Select(choices=choices)
+                if not self.initial.get(field_name):
+                    self.initial[field_name] = choices[0][0]
 
 
 class FormDefinitionForm(forms.ModelForm):
