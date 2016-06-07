@@ -7,15 +7,21 @@ from decimal import Decimal
 import django
 from django.conf import settings as django_settings
 from django.db import models
+from django.utils.deprecation import warn_about_renamed_method
 from django.utils.module_loading import import_string
 from django.utils.six import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
+from picklefield.fields import PickledObjectField
 
 from form_designer import settings
 from form_designer.fields import ModelNameField, RegexpExpressionField, TemplateCharField, TemplateTextField
-from form_designer.utils import get_random_hash
-from picklefield.fields import PickledObjectField
+from form_designer.utils import get_random_hash, string_template_replace
 
+MAIL_TEMPLATE_CONTEXT_HELP_TEXT = _(
+    'Your form fields are available as template context. '
+    'Example: "{{ first_name }} {{ last_name }} <{{ from_email }}>" '
+    'if you have fields named `first_name`, `last_name`, `from_email`.'
+)
 
 class FormValueDict(dict):
     def __init__(self, name, value, label):
@@ -35,7 +41,8 @@ class FormDefinition(models.Model):
     body = models.TextField(_('body'), help_text=_('Form description. Display on form after title.'), blank=True, null=True)
     action = models.URLField(_('target URL'), help_text=_('If you leave this empty, the page where the form resides will be requested, and you can use the mail form and logging features. You can also send data to external sites: For instance, enter "http://www.google.ch/search" to create a search form.'), max_length=255, blank=True, null=True)
     mail_to = TemplateCharField(_('send form data to e-mail address'), help_text=_('Separate several addresses with a comma. Your form fields are available as template context. Example: "admin@domain.com, {{ from_email }}" if you have a field named `from_email`.'), max_length=255, blank=True, null=True)
-    mail_from = TemplateCharField(_('sender address'), max_length=255, help_text=_('Your form fields are available as template context. Example: "{{ first_name }} {{ last_name }} <{{ from_email }}>" if you have fields named `first_name`, `last_name`, `from_email`.'), blank=True, null=True)
+    mail_from = TemplateCharField(_('sender address'), max_length=255, help_text=MAIL_TEMPLATE_CONTEXT_HELP_TEXT, blank=True, null=True)
+    mail_reply_to = TemplateCharField(_('reply-to address'), max_length=255, help_text=MAIL_TEMPLATE_CONTEXT_HELP_TEXT, blank=True)
     mail_subject = TemplateCharField(_('email subject'), max_length=255, help_text=_('Your form fields are available as template context. Example: "Contact form {{ subject }}" if you have a field named `subject`.'), blank=True, null=True)
     mail_uploaded_files = models.BooleanField(_('Send uploaded files as email attachments'), default=True)
     method = models.CharField(_('method'), max_length=10, default="POST", choices=(('POST', 'POST'), ('GET', 'GET')))
@@ -128,43 +135,18 @@ class FormDefinition(models.Model):
         flog.save()
         return flog
 
+    @warn_about_renamed_method(
+        'FormDefinition', 'string_template_replace', 'form_designer.utils.string_template_replace',
+        DeprecationWarning
+    )
     def string_template_replace(self, text, context_dict):
-        # TODO: refactor, move to utils
-        from django.template import Context, Template, TemplateSyntaxError
-        try:
-            t = Template(text)
-            return t.render(Context(context_dict))
-        except TemplateSyntaxError:
-            return text
+        return string_template_replace(text, context_dict)
 
-    def send_mail(self, form, files=[]):
-        # TODO: refactor, move to utils
-        form_data = self.get_form_data(form)
-        message = self.compile_message(form_data)
-        context_dict = self.get_form_data_context(form_data)
-
-        mail_to = re.compile('\s*[,;]+\s*').split(self.mail_to)
-        for key, email in enumerate(mail_to):
-            mail_to[key] = self.string_template_replace(email, context_dict)
-
-        mail_from = self.mail_from or None
-        if mail_from:
-            mail_from = self.string_template_replace(mail_from, context_dict)
-
-        if self.mail_subject:
-            mail_subject = self.string_template_replace(self.mail_subject, context_dict)
-        else:
-            mail_subject = self.title
-
-        from django.core.mail import EmailMessage
-        message = EmailMessage(mail_subject, message, mail_from or None, mail_to)
-        if self.is_template_html:
-            message.content_subtype = "html"
-
-        if self.mail_uploaded_files:
-            for file_path in files:
-                message.attach_file(file_path)
-
+    def send_mail(self, form, files=None):
+        if not self.mail_to:
+            return
+        from form_designer.email import build_form_mail
+        message = build_form_mail(form_definition=self, form=form, files=files)
         message.send(fail_silently=False)
 
     @property

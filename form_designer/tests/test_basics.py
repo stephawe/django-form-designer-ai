@@ -10,8 +10,11 @@ from django.core.files.base import ContentFile, File
 from django.utils.crypto import get_random_string
 
 import pytest
+
+from form_designer import settings as fd_settings
 from form_designer.contrib.exporters.csv_exporter import CsvExporter
 from form_designer.contrib.exporters.xls_exporter import XlsExporter
+from form_designer.forms import DesignedForm
 from form_designer.models import FormDefinition, FormDefinitionField, FormLog, FormValue
 from form_designer.views import process_form
 
@@ -24,14 +27,23 @@ VERY_SMALL_JPEG = b64decode(
 )
 
 
+class OverriddenDesignedForm(DesignedForm):
+    def clean_greeting(self):
+        return self.cleaned_data['greeting'].upper()
+
+
 @pytest.mark.django_db
 @pytest.mark.parametrize('push_messages', (False, True))
 @pytest.mark.parametrize('valid_data', (False, True))
 @pytest.mark.parametrize('method', ('GET', 'POST'))
 @pytest.mark.parametrize('anon', (False, True))
-def test_simple_form(rf, admin_user, greeting_form, push_messages, valid_data, method, anon):
+@pytest.mark.parametrize('override_form', (False, 'settings', 'kwarg'))
+def test_simple_form(
+    monkeypatch, rf, admin_user,
+    greeting_form, push_messages, valid_data, method, anon, override_form
+):
     fd = greeting_form
-    message = 'å%sÖ' % get_random_string()
+    message = 'zzz-å%sÖ' % get_random_string()
     data = {
         'greeting': message,
         'upload': ContentFile(VERY_SMALL_JPEG, name='hello.jpg'),
@@ -48,13 +60,31 @@ def test_simple_form(rf, admin_user, greeting_form, push_messages, valid_data, m
 
     request.user = (AnonymousUser() if anon else admin_user)
     request._messages = BaseStorage(request)
-    context = process_form(request, fd, push_messages=push_messages, disable_redirection=True)
+    kwargs = dict(
+        push_messages=push_messages,
+        disable_redirection=True,
+    )
+    if override_form == 'kwarg':
+        kwargs['form_class'] = OverriddenDesignedForm
+    elif override_form == 'settings':
+        # Can't use the pytest-django settings fixture, since `form_designer.settings`
+        # has non-lazy copies of Django settings taken at that module's import time.
+        monkeypatch.setattr(
+            fd_settings,
+            'DESIGNED_FORM_CLASS',
+            'form_designer.tests.test_basics.OverriddenDesignedForm'
+        )
+
+    context = process_form(request, fd, **kwargs)
     assert context['form_success'] == valid_data
 
     # Test that a message was (or was not) pushed
     assert len(request._messages._queued_messages) == int(push_messages)
 
     if valid_data:
+        if override_form:  # If we've overridden the form, we expect an uppercase message
+            message = message.upper()
+
         # Test that the form log was saved:
         flog = FormLog.objects.get(form_definition=fd)
         name_to_value = {d['name']: d['value'] for d in flog.data}
@@ -65,7 +95,11 @@ def test_simple_form(rf, admin_user, greeting_form, push_messages, valid_data, m
             assert flog.created_by == admin_user
 
         # Test that the email was sent:
-        assert message in mail.outbox[-1].subject
+        sent_email = mail.outbox[-1]
+
+        assert message in sent_email.subject  # (since we customized the subject with a template)
+        assert 'greetingbot' in sent_email.message().get("Reply-To")  # (since we customized the reply-to address)
+
 
 
 @pytest.mark.django_db
