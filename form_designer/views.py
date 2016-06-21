@@ -55,9 +55,9 @@ def process_form(
                                       form_definition=form_definition, request=request)
 
             if form_definition.log_data:
-                form_definition.log(form, request.user)
+                context['form_log'] = form_definition.log(form, request.user)
             if form_definition.mail_to:
-                form_definition.send_mail(form, files)
+                context['form_mail_message'] = form_definition.send_mail(form, files)
             if form_definition.success_redirect and not disable_redirection:
                 return HttpResponseRedirect(form_definition.action or '?')
             if form_definition.success_clear:

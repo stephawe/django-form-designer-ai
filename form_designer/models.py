@@ -148,6 +148,7 @@ class FormDefinition(models.Model):
         from form_designer.email import build_form_mail
         message = build_form_mail(form_definition=self, form=form, files=files)
         message.send(fail_silently=False)
+        return message
 
     @property
     def is_template_html(self):
