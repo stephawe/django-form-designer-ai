@@ -87,6 +87,7 @@ def test_simple_form(
 
         # Test that the form log was saved:
         flog = FormLog.objects.get(form_definition=fd)
+        assert flog == context['form_log']  # (and it's the same object in the context)
         name_to_value = {d['name']: d['value'] for d in flog.data}
         assert name_to_value['greeting'] == message
         if name_to_value.get('upload'):
