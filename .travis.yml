@@ -3,8 +3,11 @@ language: python
 cache:
   directories:
     - "$HOME/.cache/pip"
+services:
+  - mysql
 env:
-- DEBUG=1
+  - DATABASE=mysql DATABASE_USER=travis DATABASE_PASSWORD=
+  - DATABASE=sqlite
 python:
   - "2.7"
   - "3.4"
