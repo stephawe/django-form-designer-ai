@@ -93,3 +93,13 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+if os.environ.get('DATABASE') == 'mysql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'dfd_tests',
+            'USER': os.environ['DATABASE_USER'],
+            'PASSWORD': os.environ.get('DATABASE_PASSWORD', ''),
+        }
+    }
