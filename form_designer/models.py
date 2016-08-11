@@ -57,6 +57,7 @@ class FormDefinition(models.Model):
     message_template = TemplateTextField(_('message template'), help_text=_('Your form fields are available as template context. Example: "{{ message }}" if you have a field named `message`. To iterate over all fields, use the variable `data` (a list containing a dictionary for each form field, each containing the elements `name`, `label`, `value`).'), blank=True, null=True)
     form_template_name = models.CharField(_('form template'), max_length=255, blank=True, null=True)
     display_logged = models.BooleanField(_('display logged submissions with form'), default=False)
+    html_default_template = models.BooleanField(_('default email template in HTML'), default=False, help_text=_('If enabled, the default email template will be in HTML instead of plain format.'))
 
     class Meta:
         verbose_name = _('Form')
@@ -109,7 +110,11 @@ class FormDefinition(models.Model):
         if template:
             t = get_template(template)
         elif not self.message_template:
-            t = get_template('txt/formdefinition/data_message.txt')
+            if self.html_default_template:
+                template_file = 'html/formdefinition/data_table_message.html'
+            else:
+                template_file = 'txt/formdefinition/data_message.txt'
+            t = get_template(template_file)
         else:
             t = Template(self.message_template)
         context = self.get_form_data_context(form_data)
@@ -152,7 +157,11 @@ class FormDefinition(models.Model):
 
     @property
     def is_template_html(self):
-        if self.message_template and re.search(u"<[^>]+>", self.message_template) and re.search(u"</[^>]+>", self.message_template):
+        if (self.html_default_template and not self.message_template) or (
+                    self.message_template and 
+                    re.search(u"<[^>]+>", self.message_template) and
+                    re.search(u"</[^>]+>", self.message_template)
+                ):
             return True
         return False
 
