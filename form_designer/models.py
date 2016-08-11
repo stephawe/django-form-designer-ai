@@ -109,7 +109,7 @@ class FormDefinition(models.Model):
         if template:
             t = get_template(template)
         elif not self.message_template:
-            t = get_template('txt/formdefinition/data_message.txt')
+            t = get_template(settings.EMAIL_TEMPLATE)
         else:
             t = Template(self.message_template)
         context = self.get_form_data_context(form_data)
@@ -152,9 +152,15 @@ class FormDefinition(models.Model):
 
     @property
     def is_template_html(self):
-        if self.message_template and re.search(u"<[^>]+>", self.message_template) and re.search(u"</[^>]+>", self.message_template):
-            return True
-        return False
+        template = self.message_template
+        if template:  # We have a custom inline template string?
+            # Assume the template string is HTML-ish if it has at least one opening
+            # and closing HTML tag:
+            return (re.search(u"<[^>]+>", template) and re.search(u"</[^>]+>", template))
+
+        # If there is no custom inline template, see if the `EMAIL_TEMPLATE`
+        # setting points to a `.html` file:
+        return settings.EMAIL_TEMPLATE.lower().endswith('.html')
 
     @property
     def submit_flag_name(self):

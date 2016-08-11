@@ -1,0 +1,20 @@
+{% load friendly %}
+<html>
+    <head>
+        <style>
+            td {
+                padding: 15px;
+            }
+        </style>
+    </head>
+    <body>
+        <table>
+            {% for item in data %}{% if item.label %}
+                <tr>
+                    <td>{{ item.label }}{% else %}{{ item.name }}{% endif %}:</td>
+                    <td><strong> {{ item.value|friendly|safe }}</strong></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>

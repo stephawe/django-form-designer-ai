@@ -93,3 +93,5 @@ MAX_UPLOAD_TOTAL_SIZE = getattr(settings, 'MAX_UPLOAD_TOTAL_SIZE', 10485760)  # 
 VALUE_PICKLEFIELD = True
 
 DESIGNED_FORM_CLASS = getattr(settings, 'FORM_DESIGNER_DESIGNED_FORM_CLASS', 'form_designer.forms.DesignedForm')
+
+EMAIL_TEMPLATE = getattr(settings, 'FORM_DESIGNER_EMAIL_TEMPLATE', 'txt/formdefinition/data_message.txt')
